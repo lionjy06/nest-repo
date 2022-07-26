@@ -21,12 +21,12 @@ export class UsersController {
   @ApiResponse({ type: User })
   @Post('create')
   async createUser(
-    // @Body('name') name: string,
-    // @Body('age') age: number,
-    // @Body('email') email: string,
-    @Body() createUserDto: CreateUserDto,
+    @Body('name') name: string,
+    @Body('age') age: number,
+    @Body('email') email: string,
+    // @Body() createUserDto: CreateUserDto,
   ): Promise<User> {
-    return await this.usersService.createUser(createUserDto);
+    return await this.usersService.createUser({name,age,email});
   }
 
   @ApiResponse({ type: User, isArray: true })

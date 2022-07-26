@@ -6,6 +6,11 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TodosModule } from './apis/todos/todos.module';
+import { ContactModule } from './apis/contact/contact.module';
+import { OrderModule } from './apis/order/order.module';
+import { MeetingModule } from './apis/meeting/meeting.module';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './apis/auth/auth.module';
 
 @Module({
   imports: [
@@ -24,9 +29,15 @@ import { TodosModule } from './apis/todos/todos.module';
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize: true,
     }),
+   
     TodosModule,
+    ContactModule,
+    OrderModule,
+    MeetingModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
+  
 })
 export class AppModule {}

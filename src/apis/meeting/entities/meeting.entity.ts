@@ -1,16 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { User } from "src/apis/users/entities/user.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Todo {
+export class Meeting {
     @ApiProperty()
     @PrimaryGeneratedColumn('uuid')
     id:string
 
     @ApiProperty()
     @Column()
-    task:string
+    name:string
 
     @ApiProperty()
     @Column()
@@ -18,14 +18,15 @@ export class Todo {
 
     @CreateDateColumn()
     createdAt:Date
-  
+
     @DeleteDateColumn()
     deletedAt:Date
-  
+
     @UpdateDateColumn()
     updatedAt:Date
 
-    //onDelete:SET NULL 은 유저가 삭제될시 NULL값으로 바꾸어 todo에 누군가를 다시 세팅하게 할수있다.
-    @ManyToOne(() => User, (user) => user.todo, {onDelete:'SET NULL'})
-    user:User
+    //many to many는 알아서 onDelete cascade가 된다
+    @ManyToMany(() => User, (user) => user.meeting)
+    user:User[]
+
 }

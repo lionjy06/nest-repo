@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Order } from 'src/apis/order/entities/order.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Product {
@@ -10,4 +11,24 @@ export class Product {
   @Column()
   @ApiProperty()
   name: string;
+
+  @Column()
+  @ApiProperty()
+  price:number
+
+  @Column()
+  @ApiProperty()
+  description:string
+
+  @CreateDateColumn()
+  createdAt:Date
+
+  @DeleteDateColumn()
+  deletedAt:Date
+
+  @UpdateDateColumn()
+  updatedAt:Date
+
+  @ManyToOne(() => Order, (order) => order.product)
+  order:Order
 }
