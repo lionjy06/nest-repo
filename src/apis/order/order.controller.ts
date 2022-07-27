@@ -1,46 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 
-interface ICreateOrder{
-  createOrderDto:CreateOrderDto,
-  productId:string[]
+interface ICreateOrder {
+  createOrderDto: CreateOrderDto;
+  productId: string[];
 }
 
+@ApiTags('order')
 @Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @ApiBody({required:true})
+  @ApiBody({ required: true })
   @Post('create')
-  create(
-    @Body() createOrder:ICreateOrder
-    ) {
+  create(@Body() createOrder: ICreateOrder) {
     return this.orderService.createOrder(createOrder);
-  }
-
-
-  @Get()
-  async findProductById(
-    
-  ) {
-    return this.orderService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
   }
 }

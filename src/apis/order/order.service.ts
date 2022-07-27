@@ -10,42 +10,26 @@ import { Order } from './entities/order.entity';
 export class OrderService {
   constructor(
     @InjectRepository(Order)
-    private readonly orderRepository:Repository<Order>,
+    private readonly orderRepository: Repository<Order>,
 
     @InjectRepository(Product)
-    private readonly productRepository:Repository<Product>
-  ){}
+    private readonly productRepository: Repository<Product>,
+  ) {}
   async createOrder(createOrder) {
-    const {createOrderDto,productId } = createOrder
+    const { createOrderDto, productId } = createOrder;
     const product = await Promise.all(
-      productId.map(async v => {
+      productId.map(async (v) => {
         const result = await this.productRepository.find({
-          where:{id:v}
-        })
-        return result
-      }) 
-    )
-   const order = await this.orderRepository.save({
-     ...createOrderDto,
-     product
-   })
-    
-   return order
-  }
+          where: { id: v },
+        });
+        return result;
+      }),
+    );
+    const order = await this.orderRepository.save({
+      ...createOrderDto,
+      product,
+    });
 
-  findAll() {
-    return `This action returns all order`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
-
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+    return order;
   }
 }

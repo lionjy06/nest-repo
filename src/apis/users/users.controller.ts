@@ -25,11 +25,16 @@ export class UsersController {
     @Body('name') name: string,
     @Body('age') age: number,
     @Body('email') email: string,
-    @Body('password') password:string
+    @Body('password') password: string,
     // @Body() createUserDto: CreateUserDto,
   ): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password,5)
-    return await this.usersService.createUser({name,age,email,hashedPassword});
+    const hashedPassword = await bcrypt.hash(password, 5);
+    return await this.usersService.createUser({
+      name,
+      age,
+      email,
+      hashedPassword,
+    });
   }
 
   @ApiResponse({ type: User, isArray: true })
@@ -54,9 +59,7 @@ export class UsersController {
   }
 
   @Get('findEmail')
-  async findUserByEmail(
-    @Body('email') userEmail:string
-  ){
-      const user = await this.usersService.findUserByEmail({userEmail})
+  async findUserByEmail(@Body('email') userEmail: string) {
+    const user = await this.usersService.findUserByEmail({ userEmail });
   }
 }

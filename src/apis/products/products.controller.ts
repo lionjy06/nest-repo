@@ -8,34 +8,28 @@ import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
-    constructor(
-        private readonly productServie:ProductsService
-    ){}
+  constructor(private readonly productServie: ProductsService) {}
 
-    @UseGuards(jwtAccess)
-    @Post('create')
-    async createProduct(
-        @Body() createProductDto:CreateProductDto,
-        @CurrentUser() currenUser:ICurrentUser
-    ): Promise<Product>{
-        const product = await this.productServie.createProduct(createProductDto)
-        return product
-    }
+  @UseGuards(jwtAccess)
+  @Post('create')
+  async createProduct(
+    @Body() createProductDto: CreateProductDto,
+    @CurrentUser() currenUser: ICurrentUser,
+  ): Promise<Product> {
+    console.log(createProductDto);
+    const product = await this.productServie.createProduct(createProductDto);
+    return product;
+  }
 
-    @Get('allProducts')
-    async findProductAll(){
-    const product = await this.productServie.findAllProduct()
-    return product
-    }
+  @Get('allProducts')
+  async findProductAll() {
+    const product = await this.productServie.findAllProduct();
+    return product;
+  }
 
-
-
-    @Get(':id')
-    async findProductById(
-        @Param('id') productId:string){
-        const product = await this.productServie.findProductById({productId})
-        return product
-    }
-
-   
+  @Get(':id')
+  async findProductById(@Param('id') productId: string) {
+    const product = await this.productServie.findProductById({ productId });
+    return product;
+  }
 }

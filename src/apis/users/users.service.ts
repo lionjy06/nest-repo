@@ -12,19 +12,23 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser({name,age,email,hashedPassword}) {
-    const password = hashedPassword
-    const user = await this.userRepository.create({ name,age,email,password });
-    
+  async createUser({ name, age, email, hashedPassword }) {
+    const password = hashedPassword;
+    const user = await this.userRepository.create({
+      name,
+      age,
+      email,
+      password,
+    });
+
     return await this.userRepository.save(user);
   }
 
   async findUserById({ userId }) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-     
     });
-    console.log(user)
+    console.log(user);
     if (!user) throw new NotFoundException('해당하는 유저가 없습니다.');
     return user;
   }
@@ -42,10 +46,10 @@ export class UsersService {
     return user;
   }
 
-  async findUserByEmail({userEmail}){
+  async findUserByEmail({ userEmail }) {
     const user = await this.userRepository.findOne({
-      where:{email:userEmail}
-    })
-    return user
+      where: { email: userEmail },
+    });
+    return user;
   }
 }
