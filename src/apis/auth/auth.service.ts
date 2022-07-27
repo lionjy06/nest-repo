@@ -14,4 +14,14 @@ export class AuthService{
             {secret:'brad000', expiresIn:"30s"}
         )
     }
+
+    async getRefreshToken({user}){
+        
+        const refreshToken = await this.jwtService.sign(
+            {email:user.email, sub:user.id},
+            {secret:'brad000', expiresIn:'1h'}
+        )
+        
+        return refreshToken
+    }
 }

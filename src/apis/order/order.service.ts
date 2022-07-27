@@ -17,19 +17,17 @@ export class OrderService {
   ){}
   async createOrder(createOrder) {
     const {createOrderDto,productId } = createOrder
-    const result = await Promise.all(
+    const product = await Promise.all(
       productId.map(async v => {
-        const product = await this.productRepository.find({
+        const result = await this.productRepository.find({
           where:{id:v}
         })
-        return product
+        return result
       }) 
     )
-
-    console.log(result)
    const order = await this.orderRepository.save({
      ...createOrderDto,
-     result
+     product
    })
     
    return order

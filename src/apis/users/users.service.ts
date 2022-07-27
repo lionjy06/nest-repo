@@ -12,10 +12,11 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser({name,age,email}) {
-    const user = await this.userRepository.save({ name,age,email });
-    console.log(user);
-    return user;
+  async createUser({name,age,email,hashedPassword}) {
+    const password = hashedPassword
+    const user = await this.userRepository.create({ name,age,email,password });
+    
+    return await this.userRepository.save(user);
   }
 
   async findUserById({ userId }) {
@@ -39,5 +40,12 @@ export class UsersService {
 
     console.log(user);
     return user;
+  }
+
+  async findUserByEmail({userEmail}){
+    const user = await this.userRepository.findOne({
+      where:{email:userEmail}
+    })
+    return user
   }
 }

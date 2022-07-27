@@ -12,6 +12,7 @@ import { ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/createUser.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
+import * as bcrypt from 'bcrypt';
 
 @ApiTags('user')
 @Controller('users')
@@ -24,9 +25,11 @@ export class UsersController {
     @Body('name') name: string,
     @Body('age') age: number,
     @Body('email') email: string,
+    @Body('password') password:string
     // @Body() createUserDto: CreateUserDto,
   ): Promise<User> {
-    return await this.usersService.createUser({name,age,email});
+    const hashedPassword = await bcrypt.hash(password,5)
+    return await this.usersService.createUser({name,age,email,hashedPassword});
   }
 
   @ApiResponse({ type: User, isArray: true })
@@ -48,5 +51,12 @@ export class UsersController {
   async findUserById(@Param('id') userId: string): Promise<User> {
     const user = await this.usersService.findUserById({ userId });
     return user;
+  }
+
+  @Get('findEmail')
+  async findUserByEmail(
+    @Body('email') userEmail:string
+  ){
+      const user = await this.usersService.findUserByEmail({userEmail})
   }
 }

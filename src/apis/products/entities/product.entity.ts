@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Order } from 'src/apis/order/entities/order.entity';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Product {
@@ -29,6 +29,6 @@ export class Product {
   @UpdateDateColumn()
   updatedAt:Date
 
-  @ManyToOne(() => Order, (order) => order.product)
-  order:Order
+  @ManyToMany(() => Order, (order) => order.product)
+  order:Order[]
 }

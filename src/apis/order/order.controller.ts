@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiParam } from '@nestjs/swagger';
 
 interface ICreateOrder{
   createOrderDto:CreateOrderDto,
@@ -13,6 +13,7 @@ interface ICreateOrder{
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @ApiBody({required:true})
   @Post('create')
   create(
     @Body() createOrder:ICreateOrder
