@@ -12,8 +12,10 @@ export class jwtAccess extends PassportStrategy(Strategy, 'access') {
     });
   }
 
-  async validate(req, payload) {
-    console.log(`req:${req}`);
-    console.log(`payload:${payload}`);
+  async validate(payload: any) {
+    return {
+      id: payload.sub,
+      email: payload.email,
+    };
   }
 }
