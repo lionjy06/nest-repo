@@ -55,7 +55,7 @@ export class AuthController {
 
     const token = await this.authService.getAccessToken({ user });
 
-    await this.authService.getRefreshToken({ user, res: response.setHeader });
+    await this.authService.getRefreshToken({ user, res: response });
 
     return token;
   }

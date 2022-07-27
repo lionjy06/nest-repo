@@ -17,7 +17,7 @@ export class OrderService {
   ) {}
   async createOrder(createOrder) {
     const { createOrderDto, productId } = createOrder;
-    const product = await Promise.all(
+    const productArr = await Promise.all(
       productId.map(async (v) => {
         const result = await this.productRepository.find({
           where: { id: v },
@@ -25,11 +25,17 @@ export class OrderService {
         return result;
       }),
     );
+    const result = [];
+    productArr.forEach((ele) => {
+      result.push(ele[0]);
+    });
+    console.log(result);
+
     const order = await this.orderRepository.save({
       ...createOrderDto,
-      product,
+      product: result,
     });
-
+    console.log(order);
     return order;
   }
 }

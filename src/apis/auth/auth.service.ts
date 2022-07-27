@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 import { UsersService } from '../users/users.service';
+
+interface UserInterface {
+  user: any;
+  res: Response;
+}
 
 @Injectable()
 export class AuthService {
@@ -13,11 +19,10 @@ export class AuthService {
     );
   }
 
-  async getRefreshToken({ user, res }) {
+  async getRefreshToken({ user, res }: UserInterface) {
     const refreshToken = await this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: 'brad000', expiresIn: '1h' },
     );
-    res('Set-Cookie', `refreshToken=${refreshToken}`);
   }
 }
