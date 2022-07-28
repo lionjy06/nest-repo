@@ -18,6 +18,7 @@ export class ProductsService {
     return productCreate;
   }
 
+  
   async findProductById({ productId }) {
     const product = await this.productRepository.findOne({
       where: { id: productId },

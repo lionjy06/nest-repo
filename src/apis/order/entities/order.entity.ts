@@ -30,7 +30,7 @@ export class Order {
   user: User;
 
   @ManyToMany(() => Product, (product) => product.order)
-  @JoinColumn()
+  @JoinTable()
   product: Product[];
 
   @CreateDateColumn()

@@ -46,7 +46,7 @@ export class AuthController {
     @Body('email') userEmail: string,
     @Res() response: Response,
     @Req() request: Request,
-  ): Promise<string> {
+  ): Promise<any> {
     const user = await this.usersService.findUserByEmail({ userEmail });
     if (!user) throw new NotFoundException('유저를 찾을수 없습니다');
 
@@ -56,7 +56,9 @@ export class AuthController {
     const token = await this.authService.getAccessToken({ user });
 
     await this.authService.getRefreshToken({ user, res: response });
-
-    return token;
+    response.status(201).json({
+      status: 'ok',
+      statuscode: 201,
+    });
   }
 }

@@ -26,6 +26,7 @@ export class OrderController {
   @ApiBody({ required: true })
   @Post('create')
   async create(@Body() createOrder: ICreateOrder, @Res() response: Response) {
+    console.log(`createOrder:${createOrder}`)
     //return this.orderService.createOrder(createOrder);
     await this.orderService.createOrder(createOrder);
     response.status(201).json({

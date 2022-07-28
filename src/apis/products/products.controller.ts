@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiParam } from '@nestjs/swagger';
 import { jwtAccess } from '../auth/jwt-access';
+import { JwtAccessGuard } from '../auth/jwt.auth';
 import { CurrentUser, ICurrentUser } from '../auth/rest.params';
 import { CreateProductDto } from './dto/createProduct.dto';
 import { Product } from './entities/product.entity';
@@ -27,6 +28,7 @@ export class ProductsController {
     return product;
   }
 
+  @UseGuards(JwtAccessGuard)
   @Get(':id')
   async findProductById(@Param('id') productId: string) {
     const product = await this.productServie.findProductById({ productId });

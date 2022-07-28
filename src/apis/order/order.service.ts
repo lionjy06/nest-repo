@@ -29,13 +29,13 @@ export class OrderService {
     productArr.forEach((ele) => {
       result.push(ele[0]);
     });
-    console.log(result);
-
+    console.log(`result:${JSON.stringify(result)}`);
+    console.log(`createOrderDto:${JSON.stringify(createOrderDto)}`)
     const order = await this.orderRepository.save({
       ...createOrderDto,
       product: result,
     });
-    console.log(order);
+    console.log(`order:${order}`);
     return order;
   }
 }

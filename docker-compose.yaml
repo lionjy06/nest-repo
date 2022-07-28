@@ -6,7 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
     volumes:
       - ./src:/my_backend/src
 
@@ -21,7 +20,6 @@ services:
     image: mysql:latest
     environment:
       MYSQL_DATABASE: 'studyDB'
-      MYSQL_ROOT_USER: 'root'
       MYSQL_ROOT_PASSWORD: '072865as!'
     command:
       - --character-set-server=utf8mb4
@@ -31,3 +29,4 @@ services:
       - SYS_NICE
     ports:
       - 3306:3306
+

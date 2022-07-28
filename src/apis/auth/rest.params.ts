@@ -11,3 +11,5 @@ export const CurrentUser = createParamDecorator(
     return request.user;
   },
 );
+
+console.log(`currentUser:${CurrentUser}`)
