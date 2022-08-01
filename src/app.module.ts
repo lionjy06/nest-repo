@@ -9,7 +9,6 @@ import { TodosModule } from './apis/todos/todos.module';
 import { ContactModule } from './apis/contact/contact.module';
 import { OrderModule } from './apis/order/order.module';
 import { MeetingModule } from './apis/meeting/meeting.module';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './apis/auth/auth.module';
 @Module({
   imports: [
@@ -27,7 +26,7 @@ import { AuthModule } from './apis/auth/auth.module';
       database: process.env.DB_NAME,
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize:process.env.NODE_ENV==='production',
-      logger:'debug', 
+      // logger:'debug', 
       dropSchema:false
     }),
    

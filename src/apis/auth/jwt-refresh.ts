@@ -4,10 +4,11 @@ import { Strategy } from 'passport-jwt';
 export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   constructor() {
     super({
-      jwtFromRequest: (req) => {
-        console.log(`req:${req}`)
-        const cookies = req.headers.cookie;
 
+      jwtFromRequest: (req) => {
+        
+        const cookies = req.headers.cookie;
+        
         return cookies.replace('refreshTokn=', '');
       },
       secretOrKey: 'brad000',

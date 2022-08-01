@@ -40,7 +40,7 @@ export class AuthController {
     return await this.authService.getAccessToken({ user });
   }
 
-  @Post('create')
+  @Post('login')
   async login(
     @Body('password') password: string,
     @Body('email') userEmail: string,
@@ -54,7 +54,8 @@ export class AuthController {
 
     const token = await this.authService.getAccessToken({ user });
 
-    await this.authService.getRefreshToken({ user, res:response});
+    const refresh = await this.authService.getRefreshToken({ user, res:response});
+    
     response.status(201).json({
       token,
       status: 'ok',

@@ -23,15 +23,20 @@ interface ICreateOrder {
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @ApiBody({ required: true })
+  @ApiBody({ required: true, type:Object })
   @Post('create')
   async create(@Body() createOrder: ICreateOrder, @Res() response: Response) {
-    console.log(`createOrder:${createOrder}`)
-    //return this.orderService.createOrder(createOrder);
+    try{
     await this.orderService.createOrder(createOrder);
-    response.status(201).json({
+    return response.status(201).json({
       status: 'ok',
       statuscode: 201,
     });
+    } catch(e){
+      return response.status(400).json({
+        message:e,
+        status:400
+      })
+    }
   }
 }

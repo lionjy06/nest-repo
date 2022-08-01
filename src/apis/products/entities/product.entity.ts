@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Order } from 'src/apis/order/entities/order.entity';
+import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -42,4 +43,7 @@ export class Product {
   @ManyToMany(() => Order, (order) => order.product)
   @JoinTable()
   order: Order[];
+
+  @ManyToOne(() => User, (user) => user.product)
+  user:User
 }

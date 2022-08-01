@@ -20,8 +20,8 @@ export class UsersService {
       email,
       password,
     });
-
     return await this.userRepository.save(user);
+    
   }
 
   async findUserById({ userId }) {
@@ -33,13 +33,16 @@ export class UsersService {
     return user;
   }
 
-  async findAllUser(limit) {
-    const take = limit ? limit : 4;
+  async findAllUser({limit,page}) {
+    const take = limit ? limit : 4
+    const skip = page ? (page - 1) * 12 : 0
     console.log(typeof take);
     const user = await this.userRepository.find({
       select: ['id', 'email', 'name'],
       take,
       //take = limit
+      skip,
+      //skip = offset
     });
 
     console.log(user);

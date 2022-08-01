@@ -24,7 +24,8 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: 'brad000', expiresIn: '1h' },
     );
-    console.log(refreshToken)
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`)
+    console.log(`this is refresh:${refreshToken}`)
+    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`)
+    
   }
 }
