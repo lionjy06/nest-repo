@@ -28,7 +28,7 @@ export class AuthService {
 
     res.setHeader(
       `Set-Cookie`,
-      `refreshToken=${refreshToken}, domain=localhost:3000, path=/;`,
+      `refreshToken=${refreshToken}, secure=undefined`,
     );
   }
 }

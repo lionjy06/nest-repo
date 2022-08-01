@@ -13,7 +13,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { NotFoundError } from 'rxjs';
 import { UsersService } from '../users/users.service';
@@ -39,6 +39,8 @@ export class AuthController {
     return await this.authService.getAccessToken({ user });
   }
 
+  @ApiResponse({ status: 201, description: '로그인 로직' })
+  @ApiBody({ type: Object, required: true })
   @Post('login')
   async login(
     @Body('password') password: string,
