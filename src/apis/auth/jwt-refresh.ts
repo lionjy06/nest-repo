@@ -4,12 +4,10 @@ import { Strategy } from 'passport-jwt';
 export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   constructor() {
     super({
-
       jwtFromRequest: (req) => {
-        
         const cookies = req.headers.cookie;
-        
-        return cookies.replace('refreshTokn=', '');
+
+        return cookies.replace('refreshToken=', '');
       },
       secretOrKey: 'brad000',
       passReqToCallback: true,

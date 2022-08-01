@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import {  Response } from 'express';
+import { Response } from 'express';
 import { NotFoundError } from 'rxjs';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
@@ -23,7 +23,6 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CurrentUser, ICurrentUser } from './rest.params';
 import { User } from '../users/entities/user.entity';
-
 
 @ApiTags('auth')
 @Controller('auth')
@@ -44,19 +43,22 @@ export class AuthController {
   async login(
     @Body('password') password: string,
     @Body('email') userEmail: string,
-    @Res() response: Response
-  ): Promise<any> {
+    @Res() res: Response,
+  ) {
     const user = await this.usersService.findUserByEmail({ userEmail });
     if (!user) throw new NotFoundException('유저를 찾을수 없습니다');
 
     const isAuth = await bcrypt.compare(password, user.password);
     if (!isAuth) throw new NotFoundException('비밀번호가 옳지 안습니다.');
 
+    this.authService.getRefreshToken({
+      user,
+      res,
+    });
+
     const token = await this.authService.getAccessToken({ user });
 
-    const refresh = await this.authService.getRefreshToken({ user, res:response});
-    
-    response.status(201).json({
+    res.status(201).json({
       token,
       status: 'ok',
       statuscode: 201,

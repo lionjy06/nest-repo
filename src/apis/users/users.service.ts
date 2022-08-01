@@ -21,7 +21,6 @@ export class UsersService {
       password,
     });
     return await this.userRepository.save(user);
-    
   }
 
   async findUserById({ userId }) {
@@ -33,9 +32,9 @@ export class UsersService {
     return user;
   }
 
-  async findAllUser({limit,page}) {
-    const take = limit ? limit : 4
-    const skip = page ? (page - 1) * 12 : 0
+  async findAllUser({ limit, page }) {
+    const take = limit ? limit : 4;
+    const skip = page ? (page - 1) * 12 : 0;
     console.log(typeof take);
     const user = await this.userRepository.find({
       select: ['id', 'email', 'name'],

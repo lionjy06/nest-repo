@@ -25,11 +25,11 @@ import { AuthModule } from './apis/auth/auth.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [__dirname + '/apis/**/*.entity.*'],
-      synchronize:process.env.NODE_ENV==='production',
-      // logger:'debug', 
-      dropSchema:false
+      synchronize: process.env.NODE_ENV === 'production',
+      // logger:'debug',
+      dropSchema: false,
     }),
-   
+
     TodosModule,
     ContactModule,
     OrderModule,
@@ -38,6 +38,5 @@ import { AuthModule } from './apis/auth/auth.module';
   ],
   controllers: [AppController],
   providers: [AppService],
-  
 })
 export class AppModule {}

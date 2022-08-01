@@ -13,19 +13,23 @@ export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
   async getAccessToken({ user }) {
-    return this.jwtService.sign(
+    const accessToken = this.jwtService.sign(
       { name: user.name, sub: user.id },
       { secret: 'brad000', expiresIn: '45s' },
     );
+    return accessToken;
   }
 
   async getRefreshToken({ user, res }: UserInterface) {
-    const refreshToken = await this.jwtService.sign(
+    const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: 'brad000', expiresIn: '1h' },
     );
-    console.log(`this is refresh:${refreshToken}`)
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`)
-    
+    console.log(`this is refresh:${refreshToken}`);
+    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+    res.cookie('refreshToken', `${refreshToken}`, {
+      domain: 'http://localhost:3000',
+      path: '/',
+    });
   }
 }

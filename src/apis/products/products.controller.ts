@@ -1,12 +1,20 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { jwtAccess } from '../auth/jwt-access';
 import { JwtAccessGuard } from '../auth/jwt.auth';
 import { CurrentUser, ICurrentUser } from '../auth/rest.params';
 import { CreateProductDto } from './dto/createProduct.dto';
 import { Product } from './entities/product.entity';
-import { ProductsService } from './products.service';      
-import {  } from "module";
+import { ProductsService } from './products.service';
+import {} from 'module';
 import { create } from 'ts-node';
 import { UsersService } from '../users/users.service';
 import { Response } from 'express';
@@ -17,32 +25,37 @@ import { User } from '../users/entities/user.entity';
 export class ProductsController {
   constructor(
     private readonly productServie: ProductsService,
-    private readonly userService: UsersService
-    ) {}
+    private readonly userService: UsersService,
+  ) {}
 
   @UseGuards(JwtAccessGuard)
-  @ApiBody({type:Object, required:true, description:"상품 등록을 위한 api"})
+  @ApiBody({
+    type: Object,
+    required: true,
+    description: '상품 등록을 위한 api',
+  })
   @Post('create')
   async createProduct(
-    @Res() response:Response,
+    @Res() response: Response,
     @Body() createProductDto: CreateProductDto,
-    @CurrentUser() currentUser:ICurrentUser
-  ): Promise<Object> {
-    try{
-      
-      const product = await this.productServie.createProduct({createProductDto,currentUser});
-      return response.status(201).json({
-        status:201,
-        statusName:"ok",
-        result:product
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    try {
+      const product = await this.productServie.createProduct({
+        createProductDto,
+        currentUser,
       });
-    }catch(e){
+      return response.status(201).json({
+        status: 201,
+        statusName: 'ok',
+        result: product,
+      });
+    } catch (e) {
       return response.status(400).json({
-        status:400,
-        message:e
-      })
+        status: 400,
+        message: e,
+      });
     }
-   
   }
 
   @UseGuards(JwtAccessGuard)
