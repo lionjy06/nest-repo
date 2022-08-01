@@ -25,11 +25,10 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: 'brad000', expiresIn: '1h' },
     );
-    console.log(`this is refresh:${refreshToken}`);
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
-    res.cookie('refreshToken', `${refreshToken}`, {
-      domain: 'http://localhost:3000',
-      path: '/',
-    });
+
+    res.setHeader(
+      `Set-Cookie`,
+      `refreshToken=${refreshToken}, domain=localhost:3000, path=/;`,
+    );
   }
 }
