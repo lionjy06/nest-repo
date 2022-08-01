@@ -15,7 +15,7 @@ export class AuthService {
   async getAccessToken({ user }) {
     return this.jwtService.sign(
       { name: user.name, sub: user.id },
-      { secret: 'brad000', expiresIn: '30s' },
+      { secret: 'brad000', expiresIn: '45s' },
     );
   }
 
@@ -24,7 +24,7 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: 'brad000', expiresIn: '1h' },
     );
+    console.log(refreshToken)
     res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`)
-    
   }
 }

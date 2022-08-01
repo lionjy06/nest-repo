@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -39,5 +40,6 @@ export class Product {
   updatedAt: Date;
 
   @ManyToMany(() => Order, (order) => order.product)
+  @JoinTable()
   order: Order[];
 }

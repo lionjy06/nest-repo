@@ -11,7 +11,6 @@ import { OrderModule } from './apis/order/order.module';
 import { MeetingModule } from './apis/meeting/meeting.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './apis/auth/auth.module';
-
 @Module({
   imports: [
     UsersModule,
@@ -27,7 +26,9 @@ import { AuthModule } from './apis/auth/auth.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [__dirname + '/apis/**/*.entity.*'],
-      synchronize: true,
+      synchronize:process.env.NODE_ENV==='production',
+      logger:'debug', 
+      dropSchema:false
     }),
    
     TodosModule,

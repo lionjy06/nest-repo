@@ -6,8 +6,14 @@ import { AuthGuard } from '@nestjs/passport';
 export class JwtAccessGuard extends AuthGuard('access') {
     getRequest(ctx: ExecutionContext) {
         const request = ctx.switchToHttp().getRequest();
-        console.log(request)
-        return request.user;
+        return request
       }
 }
 
+@Injectable()
+export class JwtRefreshGuard extends AuthGuard('refresh'){
+  getRequest(ctx: ExecutionContext) {
+      const request = ctx.switchToHttp().getRequest();
+      return request
+    }
+}
