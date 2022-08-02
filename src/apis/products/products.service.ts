@@ -24,7 +24,7 @@ export class ProductsService {
 
   
   async createProduct({createProductDto,currentUser}:ICreateProduct) {
-    // const productCreate = this.productRepository.create({createProductDto,user})
+    
     const user = await this.userRepository.findOne({where:{id:currentUser.id}})
     const res =  await this.productRepository.save({
       ...createProductDto,

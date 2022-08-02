@@ -33,18 +33,14 @@ export class UsersController {
   @ApiBody({ type: Object, required: true })
   @Post('create')
   async createUser(
-    @Body('name') name: string,
-    @Body('age') age: number,
-    @Body('email') email: string,
-    @Body('password') password: string,
+    @Body() createUserDto:CreateUserDto,
     @Res() response: Response,
     // @Body() createUserDto: CreateUserDto,
   ) {
+    const {password, ...rest} = createUserDto
     const hashedPassword = await bcrypt.hash(password, 5);
     await this.usersService.createUser({
-      name,
-      age,
-      email,
+      ...rest,
       hashedPassword,
     });
     return response.status(201).json({
@@ -78,7 +74,7 @@ export class UsersController {
   @Get('findEmail')
   @ApiResponse({ status: 200 })
   @ApiBody({ type: String })
-  async findUserByEmail(@Body('email') userEmail: string) {
-    const user = await this.usersService.findUserByEmail({ userEmail });
+  async findUserByEmail(@Body('email') email: string) {
+    const user = await this.usersService.findUserByEmail({ email });
   }
 }

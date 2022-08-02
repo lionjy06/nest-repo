@@ -1,0 +1,260 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100vh;
+}
+
+.Menu_Button {
+  padding-top: 30px;
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #ebebeb;
+  cursor: pointer;
+}
+
+.Container {
+  display: flex;
+  justify-content: center;
+  padding: 0 100px;
+}
+.Wrapper {
+  width: 640px;
+  height: 980px;
+  padding: 0 50px 90px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-position: right;
+  background-image: url('../img/back-ground.jpg');
+  background-color: rgba(0, 0, 0, 0.2);
+  background-blend-mode: multiply;
+}
+#ModalContainer {
+  display: none;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  width: 640px;
+  height: 980px;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+#SignupModalWrapper {
+  overflow: scroll;
+  height: 930px;
+  padding: 50px 50px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 30px;
+  background-color: rgba(3, 102, 53, 0.9);
+  border-radius: 30px;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#SignupModalWrapper::-webkit-scrollbar {
+  display: none;
+}
+.SignupInputWrapper {
+  padding: 10px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+.SignupTitle {
+  font-weight: bold;
+  padding-bottom: 40px;
+  font-size: 28px;
+  color: #fff;
+}
+.SignupInputName {
+  width: 400px;
+  padding-bottom: 10px;
+  color: #fff;
+}
+#PhoneNumber01 {
+  width: 35px;
+  text-align: center;
+}
+#PhoneNumber02 {
+  width: 60px;
+  text-align: center;
+}
+#PhoneNumber03 {
+  width: 60px;
+  text-align: center;
+}
+.PhoneSlash {
+  color: #fff;
+  padding: 0 5px 0 5px;
+  font-size: 20px;
+}
+.NumberVailidationBtn {
+  padding: 10px;
+  color: #fff;
+  cursor: pointer;
+  background-color: black;
+}
+.NumberVailidationBtn:hover {
+  background-color: #fff;
+  color: #000;
+}
+.ValidationInput {
+  padding: 10px 10px 10px 0;
+  background: none;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #fff;
+  color: #fff;
+  width: 50%;
+}
+#LimitTime {
+  padding: 0 22px;
+  color: #fff;
+  font-size: 20px;
+}
+.SignupInput {
+  padding: 10px 10px 10px 0;
+  background: none;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #fff;
+  color: #fff;
+}
+.ButtonWrapper {
+  width: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.Signup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 30px;
+  padding: 20px;
+  /* width: 100px; */
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid #fff;
+  cursor: pointer;
+}
+.Signup:hover {
+  background-color: #fff;
+  color: #000;
+}
+.LogoWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 220px;
+  padding-bottom: 100px;
+}
+.LogoImg {
+  width: 150px;
+  height: 150px;
+}
+.LogoTitle {
+  font-size: 60px;
+  font-weight: bold;
+  color: #fff;
+  padding-top: 30px;
+}
+.SocialLoginButtonImg {
+  width: 32px;
+  height: 32px;
+  margin-right: 20px;
+}
+.SocialLoginButtonTitle {
+  text-decoration: none;
+  opacity: 1;
+  font-size: 26px;
+  font-weight: bold;
+}
+#SocialLoginKakao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 76px;
+  border-radius: 20px;
+  padding: 3px 0;
+  color: #fae100;
+  border: 2px solid #fae100;
+  margin: 5px 0;
+  cursor: pointer;
+}
+#SocialLoginKakao:hover {
+  background-color: #fae100;
+  color: #fff;
+}
+#SocialLoginGoogle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 76px;
+  border-radius: 20px;
+  padding: 3px 0;
+  color: #eceff1;
+  border: 2px solid #eceff1;
+  margin: 5px 0;
+  cursor: pointer;
+}
+#SocialLoginGoogle:hover {
+  background-color: #eceff1;
+  color: #000;
+}
+#SocialLoginNaver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 76px;
+  border-radius: 20px;
+  padding: 3px 0;
+  color: #2db400;
+  border: 2px solid #2db400;
+  margin: 5px 0;
+  cursor: pointer;
+}
+#SocialLoginNaver:hover {
+  background-color: #2db400;
+  color: #fff;
+}
+#SocialLoginFacebook {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 76px;
+  border-radius: 20px;
+  padding: 3px 0;
+  color: #3b5998;
+  border: 2px solid #3b5998;
+  margin: 5px 0;
+  cursor: pointer;
+}
+#SocialLoginFacebook:hover {
+  background-color: #3b5998;
+  color: #fff;
+}
+.SignupWrapper {
+  padding: 30px 0 10px 0;
+  color: #fff;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: center;
+}
+.SignupButton {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 10px 10px 10px 10px;
+}

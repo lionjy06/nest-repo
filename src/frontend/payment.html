@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>결제하기</title>
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.12.4.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/axios/dist/axios.min.js"
+    ></script>
+    <script>
+      function mypayment() {
+        console.log("눌러지긴 했냐...?");
+        const myAmount = Number(document.getElementById("amount").value);
+
+        const IMP = window.IMP;
+        IMP.init("imp89934474");
+        IMP.request_pay(
+          {
+            pg: "html5_inicis",
+            pay_method: "card",
+            name: "마우스",
+            amount: myAmount,
+            buyer_email: "jyjjyj06@gmail.com",
+            buyer_name: "양진영",
+            buyer_tel: "010-3349-4952",
+            buyer_addr: "경기도 용인시 기흥구 우리집",
+            buyer_postcode: "미안 나도 zip code는 몰라",
+            m_redirect_url: "", // 모바일 결제후 리다이렉트될 주소!!
+          },
+          async (rsp) => {
+            // callbacks
+            if (rsp.success) {
+              // 결제 성공시
+              alert("되슴??");
+              console.log("success 통과!!!!!!!!s");
+              const data = await axios.post(
+                "http://localhost:3000/graphql",
+                {
+                  query: `mutation {
+                    createPointTransaction(impUid: "${rsp.imp_uid}", amount: ${rsp.paid_amount}){
+                     id
+                    }
+                  }`,
+                },
+                {
+                  headers: {
+                    Authorization:
+                      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFhYSIsInN1YiI6ImQxM2Y4MTA1LTM2NzUtNGIyMy1hZjVmLTVmNjhlYWRlY2ViZCIsImlhdCI6MTY0Nzc2MDYxMywiZXhwIjoxNjQ3NzcxNDEzfQ.7N4_-wXpa0kKT_7YYbWhhQspxmZ192FlxfTmIp5EmxU",
+                  },
+                }
+              );
+              console.log(rsp);
+              // 결제 실패시
+            } else {
+              console.log("실패다!!!");
+            }
+          }
+        );
+      }
+    </script>
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+  </head>
+  <body>
+    결제할 금액: <input type="text" id="amount" />
+    <button onclick="mypayment()">결제하기</button>
+  </body>
+</html>
