@@ -113,17 +113,18 @@ export class AuthController {
   }
   
   async socialLogin(req, res) {
-    console.log(req)
+    // console.log('-------------')
+    // console.log(req)
     const user = await this.usersService.findUserByEmail({ email: req.user.email });
     const { name, age, email, password } = req.user
     if (!user) {
       
-      const hashedPassword = await bcrypt.hash(password, 5);
+      const hashedPassword = await bcrypt.hash(String(password), 5);
       
       await this.usersService.createUser({ email, name, hashedPassword, age });
     }
     await this.authService.getRefreshToken({ user, res });
-    res.redirect('https://localhost:3000');
+    res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
   }
 
   @Get('login/kakao/callback')

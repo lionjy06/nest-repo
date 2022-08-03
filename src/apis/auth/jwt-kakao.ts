@@ -9,14 +9,17 @@ export class KakaoStrategy extends PassportStrategy(Strategy,'kakao'){
             clientID:process.env.KAKAO_CLIENT_ID,
             callbackURL:process.env.KAKAO_CALLBACK_URL,
             clientSecret: process.env.KAKAO_CLIENT_SECRET,
-            scope: ['profile_image', 'account_email'],
+            scope: ['profile_image', 'account_email','profile_nickname','gender','age_range','birthday','friends','story_permalink'],
         })
     }
 
     async validate(accessToken:string, refreshToken:string, profile:Profile){
-        console.log(`this is profile info: ${profile}`)
+        console.log(profile)
         return {
-            email:profile._json
-        }
+            email: profile._json.kakao_account.email,
+            password: profile.id,
+            name: profile.displayName,
+            age: 29
+          };
     }
 }
