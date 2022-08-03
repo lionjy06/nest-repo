@@ -1,13 +1,9 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy,Profile } from "passport-kakao";
 
-export interface IKAKAO{
-    name:string,
-    kakaoId: string,
-    email:string
-}
 
-export class KakaoStrategy extends PassportStrategy(Strategy){
+
+export class KakaoStrategy extends PassportStrategy(Strategy,'kakao'){
     constructor(){
         super({
             clientID:process.env.KAKAO_CLIENT_ID,
@@ -19,6 +15,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy){
 
     async validate(accessToken:string, refreshToken:string, profile:Profile){
         console.log(`this is profile info: ${profile}`)
-        return profile
+        return {
+            email:profile._json
+        }
     }
 }

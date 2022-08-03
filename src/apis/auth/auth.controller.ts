@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { NotFoundError } from 'rxjs';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
@@ -25,8 +25,11 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CurrentUser, ICurrentUser } from './rest.params';
 import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { IKAKAO } from './jwt-kakao';
 import { JwtRefreshGuard } from './jwt.auth';
+
+interface IOauthUser {
+  user: Pick<User, 'email' | 'password' | 'age'| 'name' >;
+}
 
 @ApiTags('auth')
 @Controller('auth')
@@ -108,13 +111,33 @@ export class AuthController {
     }
    
   }
-  // @Get('/login/kakao')
-  // @UseGuards(AuthGuard('kakao'))
-  // async loginKakao(@Req() req: Request & IOauthUser, @Res() res: Response) {
-  //   let user = this.combine(req, res);
-  //   this.authService.getRefreshToken({ user, res });
-  //   res.redirect(
-  //     'http://localhost:5500/main-project/frontend/login/index.html',
-  //   );
-  // }
+  
+  async socialLogin(req, res) {
+    console.log(req)
+    const user = await this.usersService.findUserByEmail({ email: req.user.email });
+    const { name, age, email, password } = req.user
+    if (!user) {
+      
+      const hashedPassword = await bcrypt.hash(password, 5);
+      
+      await this.usersService.createUser({ email, name, hashedPassword, age });
+    }
+    await this.authService.getRefreshToken({ user, res });
+    res.redirect('https://localhost:3000');
+  }
+
+  @Get('login/kakao/callback')
+  @UseGuards(AuthGuard('kakao'))
+  async loginKakao(
+    @Req() req: Request & IOauthUser, 
+    @Res() res: Response,
+    ) {
+      try{
+        console.log('aaaa')
+        return this.socialLogin(req, res);
+      }catch(e) {
+        console.log(e)
+      }
+      
+  }
 }
