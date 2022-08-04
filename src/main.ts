@@ -11,12 +11,23 @@ async function bootstrap() {
     .setTitle('nest study')
     .setDescription('nest study before web project')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'jwt',
+        name: 'jwt',
+        description: 'jwt token',
+        in: 'header',
+      },
+      'accessKey',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('/api/docs', app, document);
-  console.log(process.env.NODE_ENV)
+  console.log(process.env.NODE_ENV);
   await app.listen(3000);
 }
 bootstrap();

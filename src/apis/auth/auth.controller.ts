@@ -12,7 +12,10 @@ import {
   UseGuards,
   NotFoundException,
   HttpCode,
+  Inject,
+  CACHE_MANAGER,
 } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -25,10 +28,10 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CurrentUser, ICurrentUser } from './rest.params';
 import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtRefreshGuard } from './jwt.auth';
-
+import { JwtAccessGuard, JwtRefreshGuard } from './jwt.auth';
+import { Cache } from 'cache-manager';
 interface IOauthUser {
-  user: Pick<User, 'email' | 'password' | 'age'| 'name' >;
+  user: Pick<User, 'email' | 'password' | 'age' | 'name'>;
 }
 
 @ApiTags('auth')
@@ -37,10 +40,14 @@ export class AuthController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async combine(req, res) {
-    let user = await this.usersService.findUserByEmail({ email: req.user.email });
+    let user = await this.usersService.findUserByEmail({
+      email: req.user.email,
+    });
 
     if (!user) {
       const { password, ...rest } = req.user;
@@ -86,41 +93,40 @@ export class AuthController {
     });
   }
 
-  @ApiBody({type:Object, required:true})
-  @ApiResponse({description:"refreshToken이 살아있다면 accessToken재발급 가능"})
+  @ApiBody({ type: Object, required: true })
+  @ApiResponse({
+    description: 'refreshToken이 살아있다면 accessToken재발급 가능',
+  })
   @UseGuards(JwtRefreshGuard)
   @Post('restore')
-  async restoreToken(
-    @Body('email') email:string,
-    @Res() res:Response
-  ){
-    try{
+  async restoreToken(@Body('email') email: string, @Res() res: Response) {
+    try {
       const user = await this.usersService.findUserByEmail({ email });
-      const token = await this.authService.getAccessToken({user})
+      const token = await this.authService.getAccessToken({ user });
       return res.status(201).json({
         token,
         status: 'ok',
         statusCode: 201,
       });
-    } catch(e) {
+    } catch (e) {
       return res.status(400).json({
-        status:'fail',
+        status: 'fail',
         statusCode: 400,
-        message:e
-      })
+        message: e,
+      });
     }
-   
   }
-  
+
   async socialLogin(req, res) {
     // console.log('-------------')
-    // console.log(req)
-    const user = await this.usersService.findUserByEmail({ email: req.user.email });
-    const { name, age, email, password } = req.user
+
+    const user = await this.usersService.findUserByEmail({
+      email: req.user.email,
+    });
+    const { name, age, email, password } = req.user;
     if (!user) {
-      
       const hashedPassword = await bcrypt.hash(String(password), 5);
-      
+
       await this.usersService.createUser({ email, name, hashedPassword, age });
     }
     await this.authService.getRefreshToken({ user, res });
@@ -129,16 +135,19 @@ export class AuthController {
 
   @Get('login/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async loginKakao(
-    @Req() req: Request & IOauthUser, 
-    @Res() res: Response,
-    ) {
-      try{
-        console.log('aaaa')
-        return this.socialLogin(req, res);
-      }catch(e) {
-        console.log(e)
-      }
-      
+  async loginKakao(@Req() req: Request & IOauthUser, @Res() res: Response) {
+    try {
+      console.log(req);
+      return this.socialLogin(req, res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('logout')
+  async logout(@Req() req: Request, @Res() res: Response) {
+    console.log('로그아웃 컨트롤러');
+    return this.authService.logout({ req, res });
   }
 }

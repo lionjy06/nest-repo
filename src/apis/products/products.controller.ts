@@ -7,7 +7,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { jwtAccess } from '../auth/jwt-access';
 import { JwtAccessGuard } from '../auth/jwt.auth';
 import { CurrentUser, ICurrentUser } from '../auth/rest.params';
@@ -29,6 +29,7 @@ export class ProductsController {
   ) {}
 
   @UseGuards(JwtAccessGuard)
+  @ApiBearerAuth()
   @ApiBody({
     type: Object,
     required: true,
@@ -41,7 +42,6 @@ export class ProductsController {
     @CurrentUser() currentUser: ICurrentUser,
   ) {
     try {
-      console.log(`sdf ${currentUser}`)
       const product = await this.productServie.createProduct({
         createProductDto,
         currentUser,
@@ -54,7 +54,7 @@ export class ProductsController {
     } catch (e) {
       return response.status(400).json({
         status: 'fail',
-        statusCode:400,
+        statusCode: 400,
         message: e,
       });
     }

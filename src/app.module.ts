@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { UsersModule } from './apis/users/users.module';
 import { ProductsModule } from './apis/products/products.module';
@@ -10,6 +10,9 @@ import { ContactModule } from './apis/contact/contact.module';
 import { OrderModule } from './apis/order/order.module';
 import { MeetingModule } from './apis/meeting/meeting.module';
 import { AuthModule } from './apis/auth/auth.module';
+import { RedisClientOptions } from 'redis';
+import * as redisStore from 'cache-manager-redis-store';
+
 @Module({
   imports: [
     UsersModule,
@@ -29,7 +32,11 @@ import { AuthModule } from './apis/auth/auth.module';
       // logger:'debug',
       dropSchema: false,
     }),
-
+    CacheModule.register<RedisClientOptions>({
+      store: redisStore,
+      url: process.env.REDIS_ADDRESS,
+      isGlobal: true,
+    }),
     TodosModule,
     ContactModule,
     OrderModule,
