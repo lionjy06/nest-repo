@@ -30,6 +30,7 @@ import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessGuard, JwtRefreshGuard } from './jwt.auth';
 import { Cache } from 'cache-manager';
+import { NaverStrategy } from './jwt-naver';
 interface IOauthUser {
   user: Pick<User, 'email' | 'password' | 'age' | 'name'>;
 }
@@ -118,8 +119,6 @@ export class AuthController {
   }
 
   async socialLogin(req, res) {
-    // console.log('-------------')
-
     const user = await this.usersService.findUserByEmail({
       email: req.user.email,
     });
@@ -129,20 +128,36 @@ export class AuthController {
 
       await this.usersService.createUser({ email, name, hashedPassword, age });
     }
-    await this.authService.getRefreshToken({ user, res });
+    const access = await this.authService.getAccessToken({user})
+    const refresh =  this.authService.getRefreshToken({ user, res });
+    const naver = await 
     res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
+  }
+
+  @Get('login/naver/callback')
+  @UseGuards(AuthGuard('naver'))
+  async loginNaver(@Req() req: Request & IOauthUser, @Res() res: Response) {
+    try {
+      console.log('------------------------------')
+      console.log(req)
+      return this.socialLogin(req, res);
+    } catch (e) {
+      console.log(e);
+
+    }
   }
 
   @Get('login/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async loginKakao(@Req() req: Request & IOauthUser, @Res() res: Response) {
     try {
-      console.log(req);
       return this.socialLogin(req, res);
     } catch (e) {
       console.log(e);
     }
   }
+
+  
 
   @UseGuards(JwtAccessGuard)
   @Get('logout')

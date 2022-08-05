@@ -18,6 +18,7 @@ export class AuthService {
   ) {}
 
   async getAccessToken({ user }) {
+    console.log(`this is user:${user}`)
     const accessToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: process.env.ACCESS_SECRET, expiresIn: '10m' },

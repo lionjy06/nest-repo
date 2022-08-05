@@ -8,10 +8,11 @@ import { User } from '../users/entities/user.entity';
 import { jwtAccess } from './jwt-access';
 import { jwtRefresh } from './jwt-refresh';
 import { KakaoStrategy } from './jwt-kakao';
+import { NaverStrategy } from './jwt-naver';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, UsersService, jwtAccess, jwtRefresh, KakaoStrategy],
+  providers: [AuthService, UsersService, jwtAccess, jwtRefresh, KakaoStrategy,NaverStrategy],
   imports: [JwtModule.register({}), TypeOrmModule.forFeature([User])],
 })
 export class AuthModule {}
