@@ -19,7 +19,7 @@ export class AuthService {
 
   async getAccessToken({ user }) {
     const accessToken = this.jwtService.sign(
-      { name: user.name, sub: user.id },
+      { email: user.email, sub: user.id },
       { secret: process.env.ACCESS_SECRET, expiresIn: '10m' },
     );
     return accessToken;
@@ -37,7 +37,8 @@ export class AuthService {
   async logout({ req, res }) {
     const refreshToken = req.headers.cookie.split('refreshToken=')[1];
     const accessToken = req.headers.authorization.replace('Bearer ', '');
-
+    
+   
     let access;
     let refresh;
     try {
@@ -46,19 +47,18 @@ export class AuthService {
     } catch (e) {
       console.log(e);
     }
-    console.log('1');
-
+   
     await this.cacheManager.set(
       `refreshToken:${refreshToken}`,
       `refreshToken`,
       { ttl: refresh.exp },
     );
-    console.log('2');
+    
 
     await this.cacheManager.set(`accessToken:${accessToken}`, `accessToken`, {
       ttl: access.exp,
     });
 
-    console.log('aa');
+    return 'logging out complete'
   }
 }

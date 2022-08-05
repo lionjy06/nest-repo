@@ -147,7 +147,11 @@ export class AuthController {
   @UseGuards(JwtAccessGuard)
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    console.log('로그아웃 컨트롤러');
-    return this.authService.logout({ req, res });
+    
+    await this.authService.logout({ req, res });
+    return res.status(200).json({
+      status:200,
+      statusName:'logged out'
+    })
   }
 }

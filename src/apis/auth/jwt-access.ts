@@ -22,13 +22,14 @@ export class jwtAccess extends PassportStrategy(Strategy, 'access') {
     });
   }
 
-  async validate(payload: any, req: Request) {
+  async validate(payload: any, req) {
     const accesstoken = payload.headers.authorization.replace('Bearer ', '');
-    const check = await this.cacheManager.get(`accesstoken:${accesstoken}`);
-    if (check) throw new NotAcceptableException('로그인 되었습니다.');
+    const token = await this.cacheManager.get(`accessToken:${accesstoken}`);
+    console.log(req)
+    if (token) throw new NotAcceptableException('로그아웃 되었습니다.');
     return {
-      id: payload.sub,
-      email: payload.email,
+      id: req.sub,
+      email: req.email,
     };
   }
 }
