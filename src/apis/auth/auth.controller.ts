@@ -119,31 +119,54 @@ export class AuthController {
   }
 
   async socialLogin(req, res) {
+    console.log('a');
+    console.log(req);
     const user = await this.usersService.findUserByEmail({
       email: req.user.email,
     });
+
     const { name, age, email, password } = req.user;
-    if (!user) {
+    if (user) {
+      const access = await this.authService.getAccessToken({ user });
+      const refresh = this.authService.getRefreshToken({ user, res });
+      await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
+    } else {
       const hashedPassword = await bcrypt.hash(String(password), 5);
 
-      await this.usersService.createUser({ email, name, hashedPassword, age });
+      const user = await this.usersService.createUser({
+        email,
+        name,
+        hashedPassword,
+        age,
+      });
+
+      const access = await this.authService.getAccessToken({ user });
+      const refresh = this.authService.getRefreshToken({ user, res });
+      await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
     }
-    const access = await this.authService.getAccessToken({user})
-    const refresh =  this.authService.getRefreshToken({ user, res });
-    const naver = await 
-    res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
+
+    // const access = await this.authService.getAccessToken({ user });
+    // const refresh = this.authService.getRefreshToken({ user, res });
+    // await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
   }
 
   @Get('login/naver/callback')
   @UseGuards(AuthGuard('naver'))
   async loginNaver(@Req() req: Request & IOauthUser, @Res() res: Response) {
     try {
-      console.log('------------------------------')
-      console.log(req)
       return this.socialLogin(req, res);
     } catch (e) {
       console.log(e);
+    }
+  }
 
+  @Get('login/google/callback')
+  @UseGuards(AuthGuard('google'))
+  async loginGoogle(@Req() req: Request & IOauthUser, @Res() res: Response) {
+    try {
+      return this.socialLogin(req, res);
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -157,16 +180,13 @@ export class AuthController {
     }
   }
 
-  
-
   @UseGuards(JwtAccessGuard)
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    
     await this.authService.logout({ req, res });
     return res.status(200).json({
-      status:200,
-      statusName:'logged out'
-    })
+      status: 200,
+      statusName: 'logged out',
+    });
   }
 }

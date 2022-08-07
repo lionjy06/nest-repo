@@ -9,10 +9,19 @@ import { jwtAccess } from './jwt-access';
 import { jwtRefresh } from './jwt-refresh';
 import { KakaoStrategy } from './jwt-kakao';
 import { NaverStrategy } from './jwt-naver';
+import { GoogleStrategy } from './jwt-google';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, UsersService, jwtAccess, jwtRefresh, KakaoStrategy,NaverStrategy],
+  providers: [
+    AuthService,
+    UsersService,
+    jwtAccess,
+    jwtRefresh,
+    KakaoStrategy,
+    GoogleStrategy,
+    NaverStrategy,
+  ],
   imports: [JwtModule.register({}), TypeOrmModule.forFeature([User])],
 })
 export class AuthModule {}

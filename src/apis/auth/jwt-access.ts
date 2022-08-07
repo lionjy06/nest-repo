@@ -25,7 +25,7 @@ export class jwtAccess extends PassportStrategy(Strategy, 'access') {
   async validate(payload: any, req) {
     const accesstoken = payload.headers.authorization.replace('Bearer ', '');
     const token = await this.cacheManager.get(`accessToken:${accesstoken}`);
-    console.log(req)
+
     if (token) throw new NotAcceptableException('로그아웃 되었습니다.');
     return {
       id: req.sub,

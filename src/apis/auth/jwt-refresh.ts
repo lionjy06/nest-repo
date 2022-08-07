@@ -22,8 +22,7 @@ export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   async validate(payload: any, req) {
     const refreshToken = req.headers.cookie.split('refreshToken=')[1];
     const token = await this.cacheManager.get(`refreshToken:${refreshToken}`);
-    console.log('------')
-    console.log(req)
+
     if (token) throw new NotAcceptableException('로그인 되었습니다.');
 
     return {
