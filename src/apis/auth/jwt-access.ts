@@ -3,12 +3,12 @@ import {
   Inject,
   Injectable,
   NotAcceptableException,
-  Req,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Cache } from 'cache-manager';
-import { Request } from 'express';
+
+
 @Injectable()
 export class jwtAccess extends PassportStrategy(Strategy, 'access') {
   constructor(

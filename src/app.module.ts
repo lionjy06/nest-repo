@@ -12,6 +12,8 @@ import { MeetingModule } from './apis/meeting/meeting.module';
 import { AuthModule } from './apis/auth/auth.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
+import { MulterModule } from '@nestjs/platform-express';
+
 
 @Module({
   imports: [
@@ -42,6 +44,7 @@ import * as redisStore from 'cache-manager-redis-store';
     OrderModule,
     MeetingModule,
     AuthModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,8 +1,10 @@
-import { CACHE_MANAGER, Inject, NotAcceptableException } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { Cache } from 'cache-manager';
-import { Request } from 'express';
+
+
+@Injectable()
 export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   constructor(
     @Inject(CACHE_MANAGER)
