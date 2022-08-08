@@ -3,6 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Upload } from './entities/upload.entity';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UploadService {
@@ -12,21 +13,17 @@ export class UploadService {
   ) {}
 
   async uploadFile(files: Express.MulterS3.File[]) {
-    const uploadfiles = [];
-    for (const element of files) {
-      const file = new Upload();
-      file.originalName = element.originalname;
-      file.mimeType = element.mimetype;
-      file.size = element.size;
-      file.url = element.location;
-
-      uploadfiles.push(file);
-    }
-
-    try {
-      return { data: await this.uploadRepository.save(uploadfiles) };
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    try{
+      const result = files.map( async v => {
+        const data = await this.uploadRepository.insert({
+          originalName:v.originalname,
+          mimeType:v.mimetype,
+          size:v.size,
+          url:v.location,
+        })
+      })
+    }catch (e) {
+      console.error(e)
     }
   }
 }
