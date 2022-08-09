@@ -14,6 +14,7 @@ import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadModule } from './apis/upload/upload.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -45,6 +46,10 @@ import { UploadModule } from './apis/upload/upload.module';
     MeetingModule,
     AuthModule,
     UploadModule,
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

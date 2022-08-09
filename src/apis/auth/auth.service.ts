@@ -32,7 +32,7 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: process.env.REFRESH_SECRET, expiresIn: '1h' },
     );
-
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.setHeader(`Set-Cookie`, `refreshToken=${refreshToken}`);
   }
 

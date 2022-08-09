@@ -24,6 +24,9 @@ export class Upload {
   @Column({ comment: 's3 업로드된 localtion url' })
   url: string;
 
+  @Column()
+  key: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

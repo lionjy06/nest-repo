@@ -1,12 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
+import * as csurf from 'csurf';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  // app.setGlobalPrefix('api');
-
+  app.use(helmet())
+  // app.use(csurf())
+  app.setGlobalPrefix('api');
+  app.enableCors({
+    origin:'http://localhost:3000',
+    credentials:true
+  })
   const config = new DocumentBuilder()
     .setTitle('nest study')
     .setDescription('nest study before web project')
