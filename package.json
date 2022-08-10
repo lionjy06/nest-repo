@@ -39,6 +39,7 @@
     "bcrypt": "^5.0.1",
     "cache-manager": "^4.1.0",
     "cache-manager-redis-store": "^3.0.0",
+    "class-transformer": "^0.5.1",
     "cross-env": "^7.0.3",
     "csurf": "^1.11.0",
     "dotenv": "^16.0.1",

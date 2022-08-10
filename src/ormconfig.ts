@@ -1,4 +1,6 @@
-const module = {
+import { DataSource } from 'typeorm';
+
+const AppDataSource = new DataSource({
   type: 'mysql',
   host: process.env.DB_HOST,
   port: 3306,
@@ -6,8 +8,9 @@ const module = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [__dirname + '/apis/**/*.entity.*'],
-  synchronize: true,
+  synchronize: process.env.NODE_ENV === 'production',
   logging: true,
-};
+  dropSchema: false,
+});
 
-export default module;
+export default AppDataSource;
