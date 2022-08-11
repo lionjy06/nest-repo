@@ -119,13 +119,12 @@ export class AuthController {
   }
 
   async socialLogin(req, res) {
-    console.log('a');
-    console.log(req);
+    
     const user = await this.usersService.findUserByEmail({
       email: req.user.email,
     });
 
-    const { name, age, email, password } = req.user;
+    const { name, age, email, password,phoneNumber } = req.user;
     if (user) {
       const access = await this.authService.getAccessToken({ user });
       const refresh = this.authService.getRefreshToken({ user, res });
@@ -138,6 +137,7 @@ export class AuthController {
         name,
         hashedPassword,
         age,
+        phoneNumber
       });
 
       const access = await this.authService.getAccessToken({ user });

@@ -1,7 +1,10 @@
 import {
   Body,
+  CACHE_MANAGER,
   Controller,
   Get,
+  Inject,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -17,6 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
 import { CreateUserDto } from './dto/createUser.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -24,10 +28,35 @@ import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { JwtRefreshGuard } from '../auth/jwt.auth';
 
+
 @ApiTags('user')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    
+    
+    ) {}
+
+  
+  @ApiBody({description:"token 만들기"})
+  @Post('token')
+  async sendSMS(
+    @Body('phoneNumber') phoneNumber:string
+  ) {
+    const token = String(Math.floor(Math.random()*(10**6))).padStart(6,'0')
+    const SMS = await this.usersService.sendSMS(phoneNumber, token)
+    return '인증번호 발급완료'
+  }
+
+  @ApiBody({required:true})
+  @Post('valid')
+  async validToken(
+    @Body('token') token:string,
+    @Body('phoneNumber') phoneNumber:string
+  ){
+    return await this.usersService.validToken(token, phoneNumber)
+  }
 
   @ApiResponse({ type: User })
   @ApiBody({ type: Object, required: true })
@@ -37,11 +66,13 @@ export class UsersController {
     @Res() response: Response,
     // @Body() createUserDto: CreateUserDto,
   ) {
-    const {password, ...rest} = createUserDto
+    const {password,phoneNumber, ...rest} = createUserDto
+    
     const hashedPassword = await bcrypt.hash(password, 5);
     await this.usersService.createUser({
       ...rest,
       hashedPassword,
+      phoneNumber
     });
     return response.status(201).json({
       status: 200,
