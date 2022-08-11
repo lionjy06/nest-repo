@@ -12,7 +12,6 @@ import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
 import { UploadService } from './upload.service';
 
-
 const s3 = new AWS.S3();
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -38,16 +37,14 @@ export class UploadController {
     }),
   )
   async uploadFile(@UploadedFiles() files: Express.MulterS3.File[]) {
-    console.log(files)
+    console.log(files);
     return this.uploadService.uploadFile(files);
   }
 
-  @ApiResponse({description:"객체를 성공적으로 삭제하였습니다."})
-  @ApiBody({type:[String], required:true})
+  @ApiResponse({ description: '객체를 성공적으로 삭제하였습니다.' })
+  @ApiBody({ type: [String], required: true })
   @Delete('delete')
-  async deleteFile(
-    @Body('s3Img') s3Img:string[]
-  ){
-    return this.uploadService.deleteFile(s3Img)
+  async deleteFile(@Body('s3Img') s3Img: string[]) {
+    return this.uploadService.deleteFile(s3Img);
   }
 }

@@ -1,17 +1,12 @@
 import {
   Body,
-  CACHE_MANAGER,
   Controller,
   Get,
-  Inject,
-  InternalServerErrorException,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Query,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -26,53 +21,43 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { JwtRefreshGuard } from '../auth/jwt.auth';
-
 
 @ApiTags('user')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    
-    
-    ) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  
-  @ApiBody({description:"token 만들기"})
+  @ApiBody({ description: 'token 만들기' })
   @Post('token')
-  async sendSMS(
-    @Body('phoneNumber') phoneNumber:string
-  ) {
-    const token = String(Math.floor(Math.random()*(10**6))).padStart(6,'0')
-    const SMS = await this.usersService.sendSMS(phoneNumber, token)
-    return '인증번호 발급완료'
+  async sendSMS(@Body('phoneNumber') phoneNumber: string) {
+    const token = String(Math.floor(Math.random() * 10 ** 6)).padStart(6, '0');
+    const SMS = await this.usersService.sendSMS(phoneNumber, token);
+    return '인증번호 발급완료';
   }
 
-  @ApiBody({required:true})
+  @ApiBody({ required: true })
   @Post('valid')
   async validToken(
-    @Body('token') token:string,
-    @Body('phoneNumber') phoneNumber:string
-  ){
-    return await this.usersService.validToken(token, phoneNumber)
+    @Body('token') token: string,
+    @Body('phoneNumber') phoneNumber: string,
+  ) {
+    return await this.usersService.validToken(phoneNumber, token);
   }
 
   @ApiResponse({ type: User })
   @ApiBody({ type: Object, required: true })
   @Post('create')
   async createUser(
-    @Body() createUserDto:CreateUserDto,
+    @Body() createUserDto: CreateUserDto,
     @Res() response: Response,
-    // @Body() createUserDto: CreateUserDto,
   ) {
-    const {password,phoneNumber, ...rest} = createUserDto
-    
+    const { password, phoneNumber, ...rest } = createUserDto;
+
     const hashedPassword = await bcrypt.hash(password, 5);
     await this.usersService.createUser({
       ...rest,
       hashedPassword,
-      phoneNumber
+      phoneNumber,
     });
     return response.status(201).json({
       status: 200,

@@ -1,4 +1,10 @@
-import { CACHE_MANAGER, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
@@ -15,17 +21,16 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    private readonly config:ConfigService,
+    private readonly config: ConfigService,
 
     @Inject(CACHE_MANAGER)
-    private readonly cacheManger:Cache
+    private readonly cacheManager: Cache,
   ) {}
 
-  
   private makeSMS() {
-    const accessKey = process.env.NAVER_SERVICE_ACCESS_KEY_ID as string;
-    const secretKey = process.env.NAVER_SERVICE_SECRET_KEY as string;
-    const uri = process.env.NAVER_SERVICE_ID
+    const accessKey = process.env.NCP_ACCESS_KEY as string;
+    const secretKey = process.env.NCP_SECRET_KEY as string;
+    const uri = process.env.NCP_PROJECT_ID;
     const message = [];
     const hmac = crypto.createHmac('sha256', secretKey);
     const space = ' ';
@@ -35,7 +40,7 @@ export class UsersService {
     const timestamp = Date.now().toString();
     message.push(method);
     message.push(space);
-    message.push(url2)
+    message.push(url2);
     message.push(newLine);
     message.push(timestamp);
     message.push(newLine);
@@ -46,8 +51,7 @@ export class UsersService {
     return signature.toString();
   }
 
-  async sendSMS(phoneNumber: string, token:string): Promise<string> {
-   
+  async sendSMS(phoneNumber: string, token: string): Promise<string> {
     const body = {
       type: 'SMS',
       contentType: 'COMM',
@@ -60,50 +64,49 @@ export class UsersService {
         },
       ],
     };
-    
-  
+
     const headers = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-iam-access-key': process.env.NAVER_SERVICE_ACCESS_KEY_ID as string,
-        'x-ncp-apigw-timestamp': Date.now().toString(),
-        'x-ncp-apigw-signature-v2': this.makeSMS(),
-      };
-    
+      'Content-Type': 'application/json; charset=utf-8',
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY as string,
+      'x-ncp-apigw-timestamp': Date.now().toString(),
+      'x-ncp-apigw-signature-v2': this.makeSMS(),
+    };
 
     axios
-      .post(`https://sens.apigw.ntruss.com/sms/v2/services/${process.env.NAVER_SERVICE_ID}/messages`, body, {headers})
+      .post(
+        `https://sens.apigw.ntruss.com/sms/v2/services/${process.env.NCP_PROJECT_ID}/messages`,
+        body,
+        { headers },
+      )
       .then(async (res) => {
-        console.log('성공했습니다 하하하하하힛히히히히힣')
+        console.log('성공했습니다 하하하하하힛히히히히힣');
       })
       .catch((err) => {
-        console.log('에러터져서 넘어옴')
+        console.log('에러터져서 넘어옴');
         console.error(err.response.data);
         throw new InternalServerErrorException();
       });
-      
-    await this.cacheManger.set(phoneNumber,token, {ttl:120})  
+
+    await this.cacheManager.set(phoneNumber, token, { ttl: 120 });
     return token;
   }
 
-  async validToken(phoneNumber,token){
-    const validation = await this.cacheManger.get(phoneNumber)
-    console.log(validation)
-    if(token === validation) {
-      await this.cacheManger.del(phoneNumber)
-      return true
-    }
-    else if(!validation) return '인증번호를 재발급 받아주세요'
-    else if(token !== validation) return '올바른 인증 번호를 보내주세요'
+  async validToken(phoneNumber, token) {
+    const validation = await this.cacheManager.get(`${phoneNumber}`);
+
+    if (token === validation) {
+      await this.cacheManager.del(phoneNumber);
+      return true;
+    } else if (!validation) return '인증번호를 재발급 받아주세요';
+    else if (token !== validation) return '올바른 인증 번호를 보내주세요';
   }
 
-
-  async createUser({ hashedPassword,phoneNumber,...rest}) {
-
+  async createUser({ hashedPassword, phoneNumber, ...rest }) {
     const password = hashedPassword;
     const user = await this.userRepository.create({
       ...rest,
       password,
-      phoneNumber
+      phoneNumber,
     });
     return await this.userRepository.save(user);
   }

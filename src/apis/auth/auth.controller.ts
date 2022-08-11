@@ -3,34 +3,27 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Query,
   Req,
   Res,
   UseGuards,
   NotFoundException,
-  HttpCode,
   Inject,
   CACHE_MANAGER,
 } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
-import { JwtService } from '@nestjs/jwt';
+
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { NotFoundError } from 'rxjs';
+
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import * as bcrypt from 'bcrypt';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+
 import { CurrentUser, ICurrentUser } from './rest.params';
 import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessGuard, JwtRefreshGuard } from './jwt.auth';
 import { Cache } from 'cache-manager';
-import { NaverStrategy } from './jwt-naver';
 interface IOauthUser {
   user: Pick<User, 'email' | 'password' | 'age' | 'name'>;
 }
@@ -119,12 +112,11 @@ export class AuthController {
   }
 
   async socialLogin(req, res) {
-    
     const user = await this.usersService.findUserByEmail({
       email: req.user.email,
     });
 
-    const { name, age, email, password,phoneNumber } = req.user;
+    const { name, age, email, password, phoneNumber } = req.user;
     if (user) {
       const access = await this.authService.getAccessToken({ user });
       const refresh = this.authService.getRefreshToken({ user, res });
@@ -137,17 +129,13 @@ export class AuthController {
         name,
         hashedPassword,
         age,
-        phoneNumber
+        phoneNumber,
       });
 
       const access = await this.authService.getAccessToken({ user });
       const refresh = this.authService.getRefreshToken({ user, res });
       await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
     }
-
-    // const access = await this.authService.getAccessToken({ user });
-    // const refresh = this.authService.getRefreshToken({ user, res });
-    // await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
   }
 
   @Get('login/naver/callback')

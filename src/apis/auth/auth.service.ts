@@ -49,14 +49,12 @@ export class AuthService {
       console.log(e);
     }
 
-    await this.cacheManager.set(
-      `refreshToken:${refreshToken}`,
-      `refreshToken`,
-      { ttl: refresh.exp },
-    );
+    await this.cacheManager.set(`refreshToken:${refreshToken}`, refreshToken, {
+      ttl: Math.floor((refresh.exp / 1000) % 60),
+    });
 
-    await this.cacheManager.set(`accessToken:${accessToken}`, `accessToken`, {
-      ttl: access.exp,
+    await this.cacheManager.set(`accessToken:${accessToken}`, accessToken, {
+      ttl: Math.floor((access.exp / 1000) % 60),
     });
 
     return 'logging out complete';
