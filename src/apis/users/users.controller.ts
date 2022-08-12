@@ -21,11 +21,15 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
+import { MailService } from '../mail/mail.service';
 
 @ApiTags('user')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly mailService:MailService
+    ) {}
 
   @ApiBody({ description: 'token 만들기' })
   @Post('token')
@@ -36,13 +40,14 @@ export class UsersController {
   }
 
   @ApiBody({ required: true })
-  @Post('valid')
+  @Post('tokenValid')
   async validToken(
     @Body('token') token: string,
     @Body('phoneNumber') phoneNumber: string,
   ) {
     return await this.usersService.validToken(phoneNumber, token);
   }
+
 
   @ApiResponse({ type: User })
   @ApiBody({ type: Object, required: true })
@@ -51,14 +56,19 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
     @Res() response: Response,
   ) {
-    const { password, phoneNumber, ...rest } = createUserDto;
+    const { password, phoneNumber,name,email, ...rest } = createUserDto;
 
     const hashedPassword = await bcrypt.hash(password, 5);
     await this.usersService.createUser({
       ...rest,
       hashedPassword,
       phoneNumber,
+      name,
+      email
     });
+
+    await this.mailService.sendMail(email,name)
+
     return response.status(201).json({
       status: 200,
       statusName: '회원가입이 성공적으로 완료되었습니다.',

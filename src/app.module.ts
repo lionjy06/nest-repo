@@ -14,6 +14,8 @@ import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { UploadModule } from './apis/upload/upload.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MailModule } from './apis/mail/mail.module';
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       ttl: 60,
       limit: 10,
     }),
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

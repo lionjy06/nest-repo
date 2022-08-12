@@ -10,6 +10,7 @@ import { jwtRefresh } from './jwt-refresh';
 import { KakaoStrategy } from './jwt-kakao';
 import { NaverStrategy } from './jwt-naver';
 import { GoogleStrategy } from './jwt-google';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   controllers: [AuthController],
@@ -21,6 +22,7 @@ import { GoogleStrategy } from './jwt-google';
     KakaoStrategy,
     GoogleStrategy,
     NaverStrategy,
+    MailService
   ],
   imports: [JwtModule.register({}), TypeOrmModule.forFeature([User])],
 })
