@@ -35,7 +35,7 @@ export class AuthController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
-    private readonly mailService:MailService,
+    private readonly mailService: MailService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -136,7 +136,7 @@ export class AuthController {
 
       const access = await this.authService.getAccessToken({ user });
       const refresh = this.authService.getRefreshToken({ user, res });
-      await this.mailService.sendMail(email,name)
+      await this.mailService.sendMail(email, name);
       await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
     }
   }

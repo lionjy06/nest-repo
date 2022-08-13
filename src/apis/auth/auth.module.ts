@@ -22,7 +22,7 @@ import { MailService } from '../mail/mail.service';
     KakaoStrategy,
     GoogleStrategy,
     NaverStrategy,
-    MailService
+    MailService,
   ],
   imports: [JwtModule.register({}), TypeOrmModule.forFeature([User])],
 })

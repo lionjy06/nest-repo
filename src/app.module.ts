@@ -14,7 +14,6 @@ import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { UploadModule } from './apis/upload/upload.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { MailModule } from './apis/mail/mail.module';
 
 @Module({
@@ -33,7 +32,6 @@ import { MailModule } from './apis/mail/mail.module';
       database: process.env.DB_NAME,
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize: process.env.NODE_ENV === 'production',
-      // logger:'debug',
       dropSchema: false,
     }),
     CacheModule.register<RedisClientOptions>({

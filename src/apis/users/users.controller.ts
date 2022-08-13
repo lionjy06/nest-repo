@@ -28,8 +28,8 @@ import { MailService } from '../mail/mail.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly mailService:MailService
-    ) {}
+    private readonly mailService: MailService,
+  ) {}
 
   @ApiBody({ description: 'token 만들기' })
   @Post('token')
@@ -48,7 +48,6 @@ export class UsersController {
     return await this.usersService.validToken(phoneNumber, token);
   }
 
-
   @ApiResponse({ type: User })
   @ApiBody({ type: Object, required: true })
   @Post('create')
@@ -56,7 +55,7 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
     @Res() response: Response,
   ) {
-    const { password, phoneNumber,name,email, ...rest } = createUserDto;
+    const { password, phoneNumber, name, email, ...rest } = createUserDto;
 
     const hashedPassword = await bcrypt.hash(password, 5);
     await this.usersService.createUser({
@@ -64,10 +63,10 @@ export class UsersController {
       hashedPassword,
       phoneNumber,
       name,
-      email
+      email,
     });
 
-    await this.mailService.sendMail(email,name)
+    await this.mailService.sendMail(email, name);
 
     return response.status(201).json({
       status: 200,
