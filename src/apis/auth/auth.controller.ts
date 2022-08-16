@@ -98,6 +98,7 @@ export class AuthController {
   async restoreToken(@Body('email') email: string, @Res() res: Response) {
     try {
       const user = await this.usersService.findUserByEmail({ email });
+      console.log(`this is aaaa ${user}`)
       const token = await this.authService.getAccessToken({ user });
       return res.status(201).json({
         token,
@@ -123,6 +124,7 @@ export class AuthController {
       const access = await this.authService.getAccessToken({ user });
       const refresh = this.authService.getRefreshToken({ user, res });
       await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
+      console.log(access)
     } else {
       const hashedPassword = await bcrypt.hash(String(password), 5);
 
@@ -138,6 +140,7 @@ export class AuthController {
       const refresh = this.authService.getRefreshToken({ user, res });
       await this.mailService.sendMail(email, name);
       await res.redirect('http://127.0.0.1:5500/src/frontend/login/index.html');
+      console.log(access)
     }
   }
 

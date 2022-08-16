@@ -9,7 +9,7 @@ import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import { Like, Repository } from 'typeorm';
+import { getRepository, Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUser.dto';
 import { User } from './entities/user.entity';
 import * as crypto from 'crypto';
@@ -31,8 +31,8 @@ export class UsersService {
   ) {}
 
   private makeSMS() {
-    const accessKey = process.env.NCP_ACCESS_KEY as string;
-    const secretKey = process.env.NCP_SECRET_KEY as string;
+    const accessKey = process.env.NCP_ACCESS_KEY;
+    const secretKey = process.env.NCP_SECRET_KEY;
     const uri = process.env.NCP_PROJECT_ID;
     const message = [];
     const hmac = crypto.createHmac('sha256', secretKey);
@@ -70,22 +70,22 @@ export class UsersService {
 
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
-      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY as string,
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
       'x-ncp-apigw-timestamp': Date.now().toString(),
       'x-ncp-apigw-signature-v2': this.makeSMS(),
     };
 
-    axios
+    await axios
       .post(
         `https://sens.apigw.ntruss.com/sms/v2/services/${process.env.NCP_PROJECT_ID}/messages`,
         body,
         { headers },
       )
       .then(async (res) => {
-        console.log('성공했습니다 하하하하하힛히히히히힣');
+        console.log('SMS발송에 성공하였습니다.');
       })
       .catch((err) => {
-        console.log('에러터져서 넘어옴');
+        console.log('SMS발송에 실패하였습니다.');
         console.error(err.response.data);
         throw new InternalServerErrorException();
       });
@@ -147,5 +147,14 @@ export class UsersService {
       where: { email },
     });
     return user;
+  }
+
+  async findUserName({userName,limit}){
+    return getRepository(User)
+    .createQueryBuilder('user')
+    .leftJoinAndSelect('user.product','product')
+    .where('user.name = :name',{name:userName})
+    .limit(+limit)
+    .getMany()
   }
 }

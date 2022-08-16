@@ -18,7 +18,7 @@ export class AuthService {
   ) {}
 
   async getAccessToken({ user }) {
-    console.log(`this is user:${user}`);
+    
 
     const accessToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
@@ -32,14 +32,16 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: process.env.REFRESH_SECRET, expiresIn: '1h' },
     );
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    
     res.setHeader(`Set-Cookie`, `refreshToken=${refreshToken}`);
   }
 
   async logout({ req, res }) {
+    console.log(req.headers)
     const refreshToken = req.headers.cookie.split('refreshToken=')[1];
     const accessToken = req.headers.authorization.replace('Bearer ', '');
-
+    console.log(`this is refreshToken in logout ${refreshToken}`)
+    console.log(`this is access in logout ${accessToken}`)
     let access;
     let refresh;
     try {

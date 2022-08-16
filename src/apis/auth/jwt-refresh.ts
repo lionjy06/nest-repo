@@ -12,9 +12,12 @@ export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   ) {
     super({
       jwtFromRequest: (req) => {
+        
         const cookies = req.headers.cookie;
-
-        return cookies.replace('refreshToken=', '');
+        
+        const replyCookie = cookies.replace('refreshToken=', '');
+        console.log(replyCookie)
+        return replyCookie
       },
       secretOrKey: process.env.REFRESH_SECRET,
       passReqToCallback: true,
@@ -22,7 +25,9 @@ export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   }
 
   async validate(payload: any, req) {
-    const refreshToken = req.headers.cookie.split('refreshToken=')[1];
+    
+    
+    const refreshToken = payload.headers.cookie.split('refreshToken=')[1];
     const token = await this.cacheManager.get(`refreshToken:${refreshToken}`);
 
     if (token) throw new NotAcceptableException('로그인 되었습니다.');

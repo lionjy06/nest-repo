@@ -66,12 +66,21 @@ export class UsersController {
       email,
     });
 
-    await this.mailService.sendMail(email, name);
-
     return response.status(201).json({
       status: 200,
       statusName: '회원가입이 성공적으로 완료되었습니다.',
     });
+  }
+
+  @ApiQuery({required:false, name:'limit'})
+  @ApiQuery({required:true, name:'name'})
+  @Get('searchName')
+  async findUserName(
+    @Query('name') userName:string,
+    @Query('limit') limitNum?:number
+  ){
+    const limit = limitNum? limitNum : 4
+    return this.usersService.findUserName({userName,limit})
   }
 
   @ApiResponse({ type: User, isArray: true })
@@ -88,6 +97,13 @@ export class UsersController {
     return user;
   }
 
+  @Get('findEmail')
+  @ApiResponse({ status: 200 })
+  @ApiBody({ type: String })
+  async findUserByEmail(@Body('email') email: string) {
+    const user = await this.usersService.findUserByEmail({ email });
+  }
+
   @ApiResponse({ type: User })
   @ApiParam({ name: 'id' })
   @Get(':id')
@@ -96,10 +112,5 @@ export class UsersController {
     return user;
   }
 
-  @Get('findEmail')
-  @ApiResponse({ status: 200 })
-  @ApiBody({ type: String })
-  async findUserByEmail(@Body('email') email: string) {
-    const user = await this.usersService.findUserByEmail({ email });
-  }
+ 
 }
