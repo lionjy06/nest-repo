@@ -41,11 +41,11 @@ export class UsersService {
     const space = ' ';
     const newLine = '\n';
     const method = 'POST';
-    const url2 = `/sms/v2/services/${uri}/messages`;
+    const url = `/sms/v2/services/${uri}/messages`;
     const timestamp = Date.now().toString();
     message.push(method);
     message.push(space);
-    message.push(url2);
+    message.push(url);
     message.push(newLine);
     message.push(timestamp);
     message.push(newLine);
