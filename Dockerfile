@@ -1,10 +1,10 @@
-FROM node:14
+FROM node:16
 
-WORKDIR /my_backend/
-COPY ./package.json /my_backend/
-COPY ./yarn.lock /my_backend/
+WORKDIR /rise_backend/
+COPY ./package.json /rise_backend/
+COPY ./yarn.lock /rise_backend/
 RUN yarn install
 
-COPY . /my_backend/
+COPY . /rise_backend/
 RUN yarn build
 CMD yarn start:dev

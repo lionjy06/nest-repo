@@ -1,7 +1,7 @@
 version: '3.3'
 
 services:
-  my_backend:
+  rise_backend:
     platform: linux/amd64
     build:
       context: .
@@ -15,11 +15,12 @@ services:
     ports:
       - 3000:3000
 
-  my_database:
+  rise_database:
     platform: linux/x86_64
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: 'studyDB'
+      MYSQL_DATABASE: 'aaaDB'
+      MYSQL_ROOT_USER: 'root'
       MYSQL_ROOT_PASSWORD: '072865as!'
     command:
       - --character-set-server=utf8mb4
@@ -30,3 +31,14 @@ services:
     ports:
       - 3306:3306
 
+  rise_redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200

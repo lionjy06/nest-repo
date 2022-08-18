@@ -4,7 +4,7 @@ import { UsersModule } from './apis/users/users.module';
 import { ProductsModule } from './apis/products/products.module';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TodosModule } from './apis/todos/todos.module';
 import { ContactModule } from './apis/contact/contact.module';
 import { OrderModule } from './apis/order/order.module';
@@ -15,6 +15,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { UploadModule } from './apis/upload/upload.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MailModule } from './apis/mail/mail.module';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 
 @Module({
   imports: [
@@ -39,6 +40,17 @@ import { MailModule } from './apis/mail/mail.module';
       url: process.env.REDIS_ADDRESS,
       isGlobal: true,
     }),
+    ElasticsearchModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        node: configService.get('ELASTICSEARCH_NODE'),
+        auth: {
+          username: configService.get('ELASTICSEARCH_USERNAME'),
+          password: configService.get('ELASTICSEARCH_PASSWORD'),
+        }
+      }),
+      inject: [ConfigService],
+    }),
     TodosModule,
     ContactModule,
     OrderModule,
@@ -53,5 +65,6 @@ import { MailModule } from './apis/mail/mail.module';
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [ElasticsearchModule]
 })
 export class AppModule {}

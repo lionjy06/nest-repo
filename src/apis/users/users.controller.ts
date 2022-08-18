@@ -48,6 +48,39 @@ export class UsersController {
     return await this.usersService.validToken(phoneNumber, token);
   }
 
+  @Get('getSchema')
+  async getSchema(){
+    return await this.usersService.getSchema()
+  }
+
+  @Post('schemaConfirm')
+  async schema(){
+    return this.usersService.schemaConfirm()
+  }
+
+  @Post('domain')
+  async makeDomain(){
+    return await this.usersService.makeDomain()
+  }
+
+  @Post('search')
+  async searchDocument(
+    @Body('name') name:string
+  ){
+    return await this.usersService.searchDocument({name})
+  }
+
+  @Post('documentInsert')
+  async documentInsert(
+    @Body('brand') brand:string,
+    @Body('name') name:string,
+    @Body('color') color:string,
+    @Body('price') price:string,
+    @Body('type') type:string,
+  ){
+    return await this.usersService.documentInsert({brand,name,color,price,type})
+  }
+
   @ApiResponse({ type: User })
   @ApiBody({ type: Object, required: true })
   @Post('create')
