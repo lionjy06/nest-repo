@@ -18,6 +18,7 @@ import { MailService } from '../mail/mail.service';
 import * as fs from 'fs'
 import schema from './car.schema';
 
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -177,19 +178,19 @@ export class UsersService {
     message.push(timestamp);
     message.push(newLine);
     message.push(accessKey);
-    //message 배열에 위의 내용들을 담아준 후에
+    
     const signature = hmac.update(message.join('')).digest('base64');
-    //message.join('') 으로 만들어진 string 을 hmac 에 담고, base64로 인코딩한다
+    
     return signature.toString();
   }
 
   async schemaConfirm(){
     const body = schema
-
+    const now = new Date().toString()
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-      'x-ncp-apigw-timestamp': Date.now().toString(),
+      'x-ncp-apigw-timestamp': now,
       'x-ncp-apigw-signature-v2': this.schemaValid(),
       'Host':'cloudsearch.apigw.ntruss.com'
     };
@@ -214,10 +215,9 @@ export class UsersService {
     message.push(newLine);
     message.push(timestamp);
     message.push(newLine);
-    message.push(accessKey);
-    //message 배열에 위의 내용들을 담아준 후에
+    message.push(accessKey)
     const signature = hmac.update(message.join('')).digest('base64');
-    //message.join('') 으로 만들어진 string 을 hmac 에 담고, base64로 인코딩한다
+    
     return signature.toString();
   }
 
@@ -238,23 +238,21 @@ export class UsersService {
         'x-ncp-apigw-timestamp': Date.now().toString(),
         'x-ncp-apigw-signature-v2': this.domainInfo(),
         'Host':'cloudsearch.apigw.ntruss.com',
-
-        
       }
 
       await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain`,body,{headers})
     }
-
-    private documentAPI(){
+    
+    private documentAPI(now:string){
       const accessKey = process.env.NCP_ACCESS_KEY;
       const secretKey = process.env.NCP_SECRET_KEY;
-      const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/manage`;
+      const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`;
       const message = [];
       const hmac = crypto.createHmac('sha256', secretKey);
       const space = ' ';
       const newLine = '\n';
       const method = 'POST';
-      const timestamp = Date.now().toString();
+      const timestamp = now;
       message.push(method);
       message.push(space);
       message.push(url);
@@ -262,45 +260,40 @@ export class UsersService {
       message.push(timestamp);
       message.push(newLine);
       message.push(accessKey);
-      //message 배열에 위의 내용들을 담아준 후에
+      
       const signature = hmac.update(message.join('')).digest('base64');
-      //message.join('') 으로 만들어진 string 을 hmac 에 담고, base64로 인코딩한다
+      
+      
       return signature.toString();
     }
 
     async searchDocument({name}){
+      const now = Date.now().toString()
       const body = {
-       
-        "search":{
-          "content_indexer":{
-            "main":[{
-              "query":name,
-              "option":"or",
-              "stopward":"josa"
-            }]
+        "start": 1,
+        "display": 20,
+        "search": {
+          "content_indexer": {
+            "main": {
+              "query": name,
+              "option": "or"
+            }
           }
         }
-        
       }
 
       const headers = {
-        'Host':'cloudsearch.apigw.ntruss.com',
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-apigw-signature-v2': this.documentAPI(),
-        'x-ncp-apigw-timestamp': Date.now().toString(),
-        'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY
+        "Content-Type": "application/json; charset=utf-8",
+        "x-ncp-apigw-signature-v2": this.documentAPI(now),
+        "x-ncp-apigw-timestamp": now,
+        "x-ncp-iam-access-key": process.env.NCP_ACCESS_KEY
       }
-
-      const result = await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`, body, {headers})
+      
+      await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`,body,{headers} )
       .then((res) => console.log(JSON.stringify(res.data)))
       .catch((err) => {
         console.log(err+' 발생했습니다.');
       })
-
-      console.log(`this is result ${result}`)
-
-      return result
-      
     }
 
     private schemaCheck(){
@@ -320,9 +313,9 @@ export class UsersService {
       message.push(timestamp);
       message.push(newLine);
       message.push(accessKey);
-      //message 배열에 위의 내용들을 담아준 후에
+      
       const signature = hmac.update(message.join('')).digest('base64');
-      //message.join('') 으로 만들어진 string 을 hmac 에 담고, base64로 인코딩한다
+
       return signature.toString();
     }
 
@@ -358,12 +351,12 @@ export class UsersService {
           },
         ],
       }
-
+      const now = new Date().toString()
       const headers = {
         'Content-Type': 'application/json; charset=utf-8',
         'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-        'x-ncp-apigw-timestamp': Date.now().toString(),
-        'x-ncp-apigw-signature-v2': this.documentAPI(),
+        'x-ncp-apigw-timestamp': now,
+        'x-ncp-apigw-signature-v2': this.documentAPI(now),
         'Host':'cloudsearch.apigw.ntruss.com'
       }
 
@@ -386,12 +379,12 @@ export class UsersService {
           },
         ],
       }
-
+const now  = new Date().toString()
       const headers = {
         'Content-Type': 'application/json; charset=utf-8',
         'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-        'x-ncp-apigw-timestamp': Date.now().toString(),
-        'x-ncp-apigw-signature-v2': this.documentAPI(),
+        'x-ncp-apigw-timestamp': now,
+        'x-ncp-apigw-signature-v2': this.documentAPI(now),
         'Host':'cloudsearch.apigw.ntruss.com'
       }
 
