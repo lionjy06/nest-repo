@@ -49,36 +49,40 @@ export class UsersController {
   }
 
   @Get('getSchema')
-  async getSchema(){
-    return await this.usersService.getSchema()
+  async getSchema() {
+    return await this.usersService.getSchema();
   }
 
   @Post('schemaConfirm')
-  async schema(){
-    return this.usersService.schemaConfirm()
+  async schema() {
+    return this.usersService.schemaConfirm();
   }
 
   @Post('domain')
-  async makeDomain(){
-    return await this.usersService.makeDomain()
+  async makeDomain() {
+    return await this.usersService.makeDomain();
   }
 
   @Post('search')
-  async searchDocument(
-    @Body('name') name:string
-  ){
-    return await this.usersService.searchDocument({name})
+  async searchDocument(@Body('name') name: string) {
+    return await this.usersService.searchDocument({ name });
   }
 
   @Post('documentInsert')
   async documentInsert(
-    @Body('brand') brand:string,
-    @Body('name') name:string,
-    @Body('color') color:string,
-    @Body('price') price:string,
-    @Body('type') type:string,
-  ){
-    return await this.usersService.documentInsert({brand,name,color,price,type})
+    @Body('brand') brand: string,
+    @Body('name') name: string,
+    @Body('color') color: string,
+    @Body('price') price: string,
+    @Body('type') type: string,
+  ) {
+    return await this.usersService.documentInsert({
+      brand,
+      name,
+      color,
+      price,
+      type,
+    });
   }
 
   @ApiResponse({ type: User })
@@ -105,15 +109,15 @@ export class UsersController {
     });
   }
 
-  @ApiQuery({required:false, name:'limit'})
-  @ApiQuery({required:true, name:'name'})
+  @ApiQuery({ required: false, name: 'limit' })
+  @ApiQuery({ required: true, name: 'name' })
   @Get('searchName')
   async findUserName(
-    @Query('name') userName:string,
-    @Query('limit') limitNum?:number
-  ){
-    const limit = limitNum? limitNum : 4
-    return this.usersService.findUserName({userName,limit})
+    @Query('name') userName: string,
+    @Query('limit') limitNum?: number,
+  ) {
+    const limit = limitNum ? limitNum : 4;
+    return this.usersService.findUserName({ userName, limit });
   }
 
   @ApiResponse({ type: User, isArray: true })
@@ -144,6 +148,4 @@ export class UsersController {
     const user = await this.usersService.findUserById({ userId });
     return user;
   }
-
- 
 }

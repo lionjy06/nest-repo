@@ -47,7 +47,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
         auth: {
           username: configService.get('ELASTICSEARCH_USERNAME'),
           password: configService.get('ELASTICSEARCH_PASSWORD'),
-        }
+        },
       }),
       inject: [ConfigService],
     }),
@@ -65,6 +65,6 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
   ],
   controllers: [AppController],
   providers: [AppService],
-  exports: [ElasticsearchModule]
+  exports: [ElasticsearchModule],
 })
 export class AppModule {}

@@ -42,7 +42,7 @@ export class User {
 
   @Column()
   @ApiProperty()
-  phoneNumber:string
+  phoneNumber: string;
 
   //self 참조(= self referencing)
   // 판매자도 유저이고 구매자도 유저인 상황에서 둘다 유저를 참조해야한다. 이럴때 유저 엔티티안에서 유저를 참조하기때문에 셀프 참조라고 한다.

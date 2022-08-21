@@ -15,9 +15,8 @@ import { User } from './entities/user.entity';
 import * as crypto from 'crypto';
 import { Cache } from 'cache-manager';
 import { MailService } from '../mail/mail.service';
-import * as fs from 'fs'
+import * as fs from 'fs';
 import schema from './car.schema';
-
 
 @Injectable()
 export class UsersService {
@@ -33,7 +32,7 @@ export class UsersService {
     private readonly cacheManager: Cache,
   ) {}
 
-  private makeSMS() {
+  private makeSMS(now: string) {
     const accessKey = process.env.NCP_ACCESS_KEY;
     const secretKey = process.env.NCP_SECRET_KEY;
     const uri = process.env.NCP_PROJECT_ID;
@@ -43,7 +42,7 @@ export class UsersService {
     const newLine = '\n';
     const method = 'POST';
     const url = `/sms/v2/services/${uri}/messages`;
-    const timestamp = Date.now().toString();
+    const timestamp = now;
     message.push(method);
     message.push(space);
     message.push(url);
@@ -58,6 +57,7 @@ export class UsersService {
   }
 
   async sendSMS(phoneNumber: string, token: string): Promise<string> {
+    const now = Date.now().toString();
     const body = {
       type: 'SMS',
       contentType: 'COMM',
@@ -74,8 +74,8 @@ export class UsersService {
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-      'x-ncp-apigw-timestamp': Date.now().toString(),
-      'x-ncp-apigw-signature-v2': this.makeSMS(),
+      'x-ncp-apigw-timestamp': now,
+      'x-ncp-apigw-signature-v2': this.makeSMS(now),
     };
 
     await axios
@@ -90,7 +90,6 @@ export class UsersService {
       .catch((err) => {
         console.log('SMS발송에 실패하였습니다.');
         console.error(err + ' 발생했습니다.');
-        
       });
 
     await this.cacheManager.set(phoneNumber, token, { ttl: 120 });
@@ -152,16 +151,16 @@ export class UsersService {
     return user;
   }
 
-  async findUserName({userName,limit}){
+  async findUserName({ userName, limit }) {
     return getRepository(User)
-    .createQueryBuilder('user')
-    .leftJoinAndSelect('user.product','product')
-    .where('user.name = :name',{name:userName})
-    .limit(+limit)
-    .getMany()
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.product', 'product')
+      .where('user.name = :name', { name: userName })
+      .limit(+limit)
+      .getMany();
   }
 
-  private schemaValid(){
+  private schemaValid(now: string) {
     const accessKey = process.env.NCP_ACCESS_KEY;
     const secretKey = process.env.NCP_SECRET_KEY;
     const url = '/CloudSearch/real/v1/schemaValidator';
@@ -170,7 +169,7 @@ export class UsersService {
     const space = ' ';
     const newLine = '\n';
     const method = 'POST';
-    const timestamp = Date.now().toString();
+    const timestamp = now;
     message.push(method);
     message.push(space);
     message.push(url);
@@ -178,28 +177,32 @@ export class UsersService {
     message.push(timestamp);
     message.push(newLine);
     message.push(accessKey);
-    
+
     const signature = hmac.update(message.join('')).digest('base64');
-    
+
     return signature.toString();
   }
 
-  async schemaConfirm(){
-    const body = schema
-    const now = new Date().toString()
+  async schemaConfirm() {
+    const body = schema;
+    const now = Date.now().toString();
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
       'x-ncp-apigw-timestamp': now,
-      'x-ncp-apigw-signature-v2': this.schemaValid(),
-      'Host':'cloudsearch.apigw.ntruss.com'
+      'x-ncp-apigw-signature-v2': this.schemaValid(now),
+      Host: 'cloudsearch.apigw.ntruss.com',
     };
-    
-    await axios.post('https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/schemaValidator',body,{headers})
-    return 'success'
+
+    await axios.post(
+      'https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/schemaValidator',
+      body,
+      { headers },
+    );
+    return 'success';
   }
 
-  private domainInfo(){
+  private domainInfo(now: string) {
     const accessKey = process.env.NCP_ACCESS_KEY;
     const secretKey = process.env.NCP_SECRET_KEY;
     const url = '/CloudSearch/real/v1/domain';
@@ -208,186 +211,210 @@ export class UsersService {
     const space = ' ';
     const newLine = '\n';
     const method = 'POST';
-    const timestamp = Date.now().toString();
+    const timestamp = now;
     message.push(method);
     message.push(space);
     message.push(url);
     message.push(newLine);
     message.push(timestamp);
     message.push(newLine);
-    message.push(accessKey)
+    message.push(accessKey);
     const signature = hmac.update(message.join('')).digest('base64');
-    
+
     return signature.toString();
   }
 
-  async makeDomain(){
-    const schemaForm = schema
+  async makeDomain() {
+    const now = Date.now().toString();
+    const schemaForm = schema;
     const body = {
-        "name":process.env.NCP_CLOUDSEARCH_DOMAIN,
-        "description": "cloud search test 8",
-        "type": "small",
-        "indexerCount": 1,
-        "searcherCount": 1,
-        "schema": schemaForm
-      }
+      name: process.env.NCP_CLOUDSEARCH_DOMAIN,
+      description: 'cloud search test 8',
+      type: 'small',
+      indexerCount: 1,
+      searcherCount: 1,
+      schema: schemaForm,
+    };
 
-      const headers = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-        'x-ncp-apigw-timestamp': Date.now().toString(),
-        'x-ncp-apigw-signature-v2': this.domainInfo(),
-        'Host':'cloudsearch.apigw.ntruss.com',
-      }
+    const headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
+      'x-ncp-apigw-timestamp': now,
+      'x-ncp-apigw-signature-v2': this.domainInfo(now),
+      Host: 'cloudsearch.apigw.ntruss.com',
+    };
 
-      await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain`,body,{headers})
-    }
-    
-    private documentAPI(now:string){
-      const accessKey = process.env.NCP_ACCESS_KEY;
-      const secretKey = process.env.NCP_SECRET_KEY;
-      const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`;
-      const message = [];
-      const hmac = crypto.createHmac('sha256', secretKey);
-      const space = ' ';
-      const newLine = '\n';
-      const method = 'POST';
-      const timestamp = now;
-      message.push(method);
-      message.push(space);
-      message.push(url);
-      message.push(newLine);
-      message.push(timestamp);
-      message.push(newLine);
-      message.push(accessKey);
-      
-      const signature = hmac.update(message.join('')).digest('base64');
-      
-      
-      return signature.toString();
-    }
+    await axios.post(
+      `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain`,
+      body,
+      { headers },
+    );
+  }
 
-    async searchDocument({name}){
-      const now = Date.now().toString()
-      const body = {
-        "start": 1,
-        "display": 20,
-        "search": {
-          "content_indexer": {
-            "main": {
-              "query": name,
-              "option": "or"
-            }
-          }
-        }
-      }
+  private documentAPI(now: string) {
+    const accessKey = process.env.NCP_ACCESS_KEY;
+    const secretKey = process.env.NCP_SECRET_KEY;
+    const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`;
+    const message = [];
+    const hmac = crypto.createHmac('sha256', secretKey);
+    const space = ' ';
+    const newLine = '\n';
+    const method = 'POST';
+    const timestamp = now;
+    message.push(method);
+    message.push(space);
+    message.push(url);
+    message.push(newLine);
+    message.push(timestamp);
+    message.push(newLine);
+    message.push(accessKey);
 
-      const headers = {
-        "Content-Type": "application/json; charset=utf-8",
-        "x-ncp-apigw-signature-v2": this.documentAPI(now),
-        "x-ncp-apigw-timestamp": now,
-        "x-ncp-iam-access-key": process.env.NCP_ACCESS_KEY
-      }
-      
-      await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`,body,{headers} )
+    const signature = hmac.update(message.join('')).digest('base64');
+
+    return signature.toString();
+  }
+
+  async searchDocument({ name }) {
+    const now = Date.now().toString();
+    const body = {
+      start: 1,
+      display: 20,
+      search: {
+        content_indexer: {
+          main: {
+            query: name,
+            option: 'or',
+          },
+        },
+      },
+    };
+
+    const headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'x-ncp-apigw-signature-v2': this.documentAPI(now),
+      'x-ncp-apigw-timestamp': now,
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
+    };
+
+    await axios
+      .post(
+        `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`,
+        body,
+        { headers },
+      )
       .then((res) => console.log(JSON.stringify(res.data)))
       .catch((err) => {
-        console.log(err+' 발생했습니다.');
-      })
-    }
+        console.log(err + ' 발생했습니다.');
+      });
+  }
 
-    private schemaCheck(){
-      const accessKey = process.env.NCP_ACCESS_KEY;
-      const secretKey = process.env.NCP_SECRET_KEY;
-      const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`;
-      const message = [];
-      const hmac = crypto.createHmac('sha256', secretKey);
-      const space = ' ';
-      const newLine = '\n';
-      const method = 'GET';
-      const timestamp = Date.now().toString();
-      message.push(method);
-      message.push(space);
-      message.push(url);
-      message.push(newLine);
-      message.push(timestamp);
-      message.push(newLine);
-      message.push(accessKey);
-      
-      const signature = hmac.update(message.join('')).digest('base64');
+  private schemaCheck(now: string) {
+    const accessKey = process.env.NCP_ACCESS_KEY;
+    const secretKey = process.env.NCP_SECRET_KEY;
+    const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`;
+    const message = [];
+    const hmac = crypto.createHmac('sha256', secretKey);
+    const space = ' ';
+    const newLine = '\n';
+    const method = 'GET';
+    const timestamp = now;
+    message.push(method);
+    message.push(space);
+    message.push(url);
+    message.push(newLine);
+    message.push(timestamp);
+    message.push(newLine);
+    message.push(accessKey);
 
-      return signature.toString();
-    }
+    const signature = hmac.update(message.join('')).digest('base64');
 
-    async getSchema(){
-      const headers = {
-        "Host":"cloudsearch.apigw.ntruss.com",
+    return signature.toString();
+  }
 
-        "x-ncp-apigw-signature-v2": this.schemaCheck(),
-        "x-ncp-apigw-timestamp": Date.now().toString(),
-        "x-ncp-iam-access-key": process.env.NCP_ACCESS_KEY
-      }
+  async getSchema() {
+    const now = Date.now().toString();
+    const headers = {
+      Host: 'cloudsearch.apigw.ntruss.com',
 
-      const result = await axios.get(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`, {headers})
-      .then(async (res) => console.log(JSON.stringify(res.data)+' 성공했습니다.'))
-      .catch((err) => console.log(err+' 발생했습니다.'))
+      'x-ncp-apigw-signature-v2': this.schemaCheck(now),
+      'x-ncp-apigw-timestamp': now,
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
+    };
 
-      return '성공했습니다'
-    }
+    const result = await axios
+      .get(
+        `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`,
+        { headers },
+      )
+      .then(async (res) =>
+        console.log(JSON.stringify(res.data) + ' 성공했습니다.'),
+      )
+      .catch((err) => console.log(err + ' 발생했습니다.'));
 
-    async documentInsert({brand,name,color,price,type}){
-      const body = {
-        "requests": [
-          {
-            "type": "insert",
-            "content": {
-              "docid": crypto.randomUUID(),
-              "brand": brand,
-              "name": name,
-              "color": color,
-              "price": price,
-              "type": type
-            }
+    return '성공했습니다';
+  }
+
+  async documentInsert({ brand, name, color, price, type }) {
+    const body = {
+      requests: [
+        {
+          type: 'insert',
+          content: {
+            docid: crypto.randomUUID(),
+            brand: brand,
+            name: name,
+            color: color,
+            price: price,
+            type: type,
           },
-        ],
-      }
-      const now = new Date().toString()
-      const headers = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-        'x-ncp-apigw-timestamp': now,
-        'x-ncp-apigw-signature-v2': this.documentAPI(now),
-        'Host':'cloudsearch.apigw.ntruss.com'
-      }
+        },
+      ],
+    };
+    const now = new Date().toString();
+    const headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
+      'x-ncp-apigw-timestamp': now,
+      'x-ncp-apigw-signature-v2': this.documentAPI(now),
+      Host: 'cloudsearch.apigw.ntruss.com',
+    };
 
-      await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/manage`,body,{headers})
-    }
+    await axios.post(
+      `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/manage`,
+      body,
+      { headers },
+    );
+  }
 
-    async documentUpsert({brand,name,color,price,type}){
-      const body = {
-        "requests": [
-          {
-            "type": "insert",
-            "content": {
-              "docid": crypto.randomUUID(),
-              "brand": brand,
-              "name": name,
-              "color": color,
-              "price": price,
-              "type": type
-            }
+  async documentUpsert({ brand, name, color, price, type }) {
+    const body = {
+      requests: [
+        {
+          type: 'insert',
+          content: {
+            docid: crypto.randomUUID(),
+            brand: brand,
+            name: name,
+            color: color,
+            price: price,
+            type: type,
           },
-        ],
-      }
-const now  = new Date().toString()
-      const headers = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-        'x-ncp-apigw-timestamp': now,
-        'x-ncp-apigw-signature-v2': this.documentAPI(now),
-        'Host':'cloudsearch.apigw.ntruss.com'
-      }
+        },
+      ],
+    };
+    const now = new Date().toString();
+    const headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
+      'x-ncp-apigw-timestamp': now,
+      'x-ncp-apigw-signature-v2': this.documentAPI(now),
+      Host: 'cloudsearch.apigw.ntruss.com',
+    };
 
-      await axios.post(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/manage`,body,{headers})
-    }
+    await axios.post(
+      `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/manage`,
+      body,
+      { headers },
+    );
+  }
 }
