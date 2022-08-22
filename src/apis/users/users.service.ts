@@ -202,6 +202,44 @@ export class UsersService {
     return 'success';
   }
 
+  private schemaChange(now: string) {
+    const accessKey = process.env.NCP_ACCESS_KEY;
+    const secretKey = process.env.NCP_SECRET_KEY;
+    const url = `/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`;
+    const message = [];
+    const hmac = crypto.createHmac('sha256', secretKey);
+    const space = ' ';
+    const newLine = '\n';
+    const method = 'PUT';
+    const timestamp = now;
+    message.push(method);
+    message.push(space);
+    message.push(url);
+    message.push(newLine);
+    message.push(timestamp);
+    message.push(newLine);
+    message.push(accessKey);
+
+    const signature = hmac.update(message.join('')).digest('base64');
+
+    return signature.toString();
+  }
+
+  async schemaAlter(){
+    const now = Date.now().toString()
+    
+    const body = schema
+
+    const headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
+      "x-ncp-apigw-signature-v2": this.schemaChange(now),
+      "x-ncp-apigw-timestamp": now,
+    }
+
+    await axios.put(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`, body, {headers})
+  }
+
   private domainInfo(now: string) {
     const accessKey = process.env.NCP_ACCESS_KEY;
     const secretKey = process.env.NCP_SECRET_KEY;
@@ -277,17 +315,40 @@ export class UsersService {
   async searchDocument({ name }) {
     const now = Date.now().toString();
     const body = {
-      start: 1,
-      display: 20,
-      search: {
-        content_indexer: {
-          main: {
-            query: name,
-            option: 'or',
-          },
-        },
+      "start": 1,
+      "display": 10,
+      "search": {
+        "content_indexer": {
+          "main": {
+            "type": "null",
+            "stopword": "josa"
+          }
+        }
       },
-    };
+      "sort": {
+        "dp_price": "asc"
+      },
+      "scope": {
+        "dp_price": {
+          "range": []
+        }
+      },
+      "highlighting": {
+        "enable": true,
+        "pre_tag": "<b>",
+        "post_tag": "</b>",
+        "remove_html_tag": true,
+        "skip_html_tag": true,
+        "num_entity_as_char": false,
+        "braket_as_tag": false,
+        "skip_char_entity": true,
+        "kata_to_hira": false,
+        "bold_sub_query": false,
+        "bold_sub_english": true,
+        "bold_sub_digit": true,
+        "bold_sub_hanja": false
+      }
+    }
 
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',

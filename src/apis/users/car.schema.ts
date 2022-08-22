@@ -6,7 +6,13 @@ const schema = {
          "name":"docid"
       },
       {
-         "name":"brand"
+        "docProperties": [
+          {
+            "type": "string",
+            "name": "dp_brand"
+          }
+        ],
+        "name": "brand"
       },
       {
          "name":"name"
@@ -15,7 +21,13 @@ const schema = {
          "name":"color"
       },
       {
-         "name":"price"
+        "docProperties": [
+          {
+            "type": "int16",
+            "name": "dp_price"
+          }
+        ],
+        "name": "price"
       },
       {
          "name":"type"

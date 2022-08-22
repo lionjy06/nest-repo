@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Res,
 } from '@nestjs/common';
@@ -83,6 +84,11 @@ export class UsersController {
       price,
       type,
     });
+  }
+
+  @Put('schemaChange')
+  async schemaChange(){
+    return await this.usersService.schemaAlter()
   }
 
   @ApiResponse({ type: User })
