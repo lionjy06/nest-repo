@@ -15,10 +15,22 @@ const schema = {
         "name": "brand"
       },
       {
-         "name":"name"
+        "docProperties": [
+          {
+            "type": "string",
+            "name": "dp_name"
+          }
+        ],
+        "name": "name"
       },
       {
-         "name":"color"
+        "docProperties": [
+          {
+            "type": "string",
+            "name": "dp_color"
+          }
+        ],
+        "name": "color"
       },
       {
         "docProperties": [

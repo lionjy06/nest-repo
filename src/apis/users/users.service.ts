@@ -320,8 +320,9 @@ export class UsersService {
       "search": {
         "content_indexer": {
           "main": {
-            "type": "null",
-            "stopword": "josa"
+            "query":name,
+            "stopword": "josa",
+            "option": "or"
           }
         }
       },
@@ -330,7 +331,7 @@ export class UsersService {
       },
       "scope": {
         "dp_price": {
-          "range": []
+          "range": [1000,3000]
         }
       },
       "highlighting": {
@@ -357,7 +358,7 @@ export class UsersService {
       'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
     };
 
-    await axios
+    const result = await axios
       .post(
         `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/document/search`,
         body,
@@ -367,6 +368,8 @@ export class UsersService {
       .catch((err) => {
         console.log(err + ' 발생했습니다.');
       });
+
+      return result
   }
 
   private schemaCheck(now: string) {
