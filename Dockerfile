@@ -8,3 +8,4 @@ RUN yarn install
 COPY . /rise_backend/
 RUN yarn build
 CMD yarn start:dev
+

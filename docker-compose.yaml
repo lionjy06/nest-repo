@@ -1,44 +1,44 @@
-version: '3.3'
+# version: '3.3'
 
-services:
-  rise_backend:
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./src:/my_backend/src
+# services:
+#   rise_backend:
+#     platform: linux/amd64
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./src:/my_backend/src
 
-    env_file:
-      - ./.env
+#     env_file:
+#       - ./.env
 
-    ports:
-      - 3000:3000
+#     ports:
+#       - 3000:3000
 
-  rise_database:
-    platform: linux/x86_64
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: 'aaaDB'
-      MYSQL_ROOT_USER: 'root'
-      MYSQL_ROOT_PASSWORD: '072865as!'
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --skip-character-set-client-handshake
-    cap_add:
-      - SYS_NICE
-    ports:
-      - 3306:3306
+#   rise_database:
+#     platform: linux/x86_64
+#     image: mysql:latest
+#     environment:
+#       MYSQL_DATABASE: 'aaaDB'
+#       MYSQL_ROOT_USER: 'root'
+#       MYSQL_ROOT_PASSWORD: '072865as!'
+#     command:
+#       - --character-set-server=utf8mb4
+#       - --collation-server=utf8mb4_unicode_ci
+#       - --skip-character-set-client-handshake
+#     cap_add:
+#       - SYS_NICE
+#     ports:
+#       - 3306:3306
 
-  rise_redis:
-    image: redis:latest
-    ports:
-      - 6379:6379
+#   rise_redis:
+#     image: redis:latest
+#     ports:
+#       - 6379:6379
 
-  elasticsearch:
-    image: elasticsearch:7.17.0
-    environment:
-      discovery.type: single-node
-    ports:
-      - 9200:9200
+#   elasticsearch:
+#     image: elasticsearch:7.17.0
+#     environment:
+#       discovery.type: single-node
+#     ports:
+#       - 9200:9200

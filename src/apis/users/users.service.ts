@@ -17,6 +17,7 @@ import { Cache } from 'cache-manager';
 import { MailService } from '../mail/mail.service';
 import * as fs from 'fs';
 import schema from './car.schema';
+import { DiagnosticCategory } from 'typescript';
 
 @Injectable()
 export class UsersService {
@@ -225,19 +226,23 @@ export class UsersService {
     return signature.toString();
   }
 
-  async schemaAlter(){
-    const now = Date.now().toString()
-    
-    const body = schema
+  async schemaAlter() {
+    const now = Date.now().toString();
+
+    const body = schema;
 
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'x-ncp-iam-access-key': process.env.NCP_ACCESS_KEY,
-      "x-ncp-apigw-signature-v2": this.schemaChange(now),
-      "x-ncp-apigw-timestamp": now,
-    }
+      'x-ncp-apigw-signature-v2': this.schemaChange(now),
+      'x-ncp-apigw-timestamp': now,
+    };
 
-    await axios.put(`https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`, body, {headers})
+    await axios.put(
+      `https://cloudsearch.apigw.ntruss.com/CloudSearch/real/v1/domain/${process.env.NCP_CLOUDSEARCH_DOMAIN}/schema`,
+      body,
+      { headers },
+    );
   }
 
   private domainInfo(now: string) {
@@ -312,44 +317,48 @@ export class UsersService {
     return signature.toString();
   }
 
-  async searchDocument({ name }) {
+  async searchDocument({ name, category }) {
     const now = Date.now().toString();
     const body = {
-      "start": 1,
-      "display": 10,
-      "search": {
-        "content_indexer": {
-          "main": {
-            "query":name,
-            "stopword": "josa",
-            "option": "or"
-          }
-        }
+      start: 1,
+      display: 10,
+      search: {
+        content_indexer: {
+          main: {
+            query: name,
+            stopword: 'josa',
+            option: 'or',
+          },
+          intersection: {
+            query: category,
+            option: 'or',
+          },
+        },
       },
-      "sort": {
-        "dp_price": "asc"
+      sort: {
+        dp_price: 'asc',
       },
-      "scope": {
-        "dp_price": {
-          "range": [1000,3000]
-        }
+      scope: {
+        dp_price: {
+          range: [1000, 3000],
+        },
       },
-      "highlighting": {
-        "enable": true,
-        "pre_tag": "<b>",
-        "post_tag": "</b>",
-        "remove_html_tag": true,
-        "skip_html_tag": true,
-        "num_entity_as_char": false,
-        "braket_as_tag": false,
-        "skip_char_entity": true,
-        "kata_to_hira": false,
-        "bold_sub_query": false,
-        "bold_sub_english": true,
-        "bold_sub_digit": true,
-        "bold_sub_hanja": false
-      }
-    }
+      highlighting: {
+        enable: true,
+        pre_tag: '<b>',
+        post_tag: '</b>',
+        remove_html_tag: true,
+        skip_html_tag: true,
+        num_entity_as_char: false,
+        braket_as_tag: false,
+        skip_char_entity: true,
+        kata_to_hira: false,
+        bold_sub_query: false,
+        bold_sub_english: true,
+        bold_sub_digit: true,
+        bold_sub_hanja: false,
+      },
+    };
 
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
@@ -369,7 +378,7 @@ export class UsersService {
         console.log(err + ' 발생했습니다.');
       });
 
-      return result
+    return result;
   }
 
   private schemaCheck(now: string) {

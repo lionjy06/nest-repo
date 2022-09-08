@@ -65,8 +65,11 @@ export class UsersController {
   }
 
   @Post('search')
-  async searchDocument(@Body('name') name: string) {
-    return await this.usersService.searchDocument({ name });
+  async searchDocument(
+    @Body('name') name: string,
+    @Body('category') category:string
+    ) {
+    return await this.usersService.searchDocument({ name, category });
   }
 
   @Post('documentInsert')

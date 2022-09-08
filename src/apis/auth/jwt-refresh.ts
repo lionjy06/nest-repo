@@ -1,8 +1,12 @@
-import { CACHE_MANAGER, Inject, Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { Cache } from 'cache-manager';
-
 
 @Injectable()
 export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
@@ -12,12 +16,11 @@ export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   ) {
     super({
       jwtFromRequest: (req) => {
-        
         const cookies = req.headers.cookie;
-        
+
         const replyCookie = cookies.replace('refreshToken=', '');
-        
-        return replyCookie
+
+        return replyCookie;
       },
       secretOrKey: process.env.REFRESH_SECRET,
       passReqToCallback: true,
@@ -25,8 +28,6 @@ export class jwtRefresh extends PassportStrategy(Strategy, 'refresh') {
   }
 
   async validate(payload: any, req) {
-    
-    
     const refreshToken = payload.headers.cookie.split('refreshToken=')[1];
     const token = await this.cacheManager.get(`refreshToken:${refreshToken}`);
 
